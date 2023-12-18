@@ -1,0 +1,17 @@
+{
+  "plugins": ["prettier-plugin-tailwindcss"],
+  "pluginSearchDirs": false,
+  "importOrder": ["<THIRD_PARTY_MODULES>", "^@(.+)/(.+)$", "^\\..+"],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "useTabs": false,
+  "tabWidth": 2,
+  "printWidth": 80,
+  "singleQuote": true,
+  "jsxSingleQuote": true,
+  "arrowParens": "avoid",
+  "trailingComma": "none",
+  "bracketSameLine": true,
+  "semi": true,
+  "bracketSpacing": true
+}
