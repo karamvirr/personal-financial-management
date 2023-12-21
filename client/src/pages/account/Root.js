@@ -8,9 +8,9 @@ const SideBarNavItem = ({ label, path, icon }) => {
     <NavLink to={path}>
       {({ isActive }) => (
         <li
-          className={`flex flex-row items-center gap-3.5 px-5 py-2.5 text-sm
+          className={`flex flex-row items-center gap-3.5 px-10 py-2.5 text-sm
             font-light text-white subpixel-antialiased transition-all duration-200 ${
-              isActive ? 'bg-zinc-900 text-white' : 'text-zinc-300'
+              isActive ? 'bg-zinc-900 text-white' : 'text-gray-300'
             }`}>
           {icon}
           {label}
@@ -23,7 +23,7 @@ const SideBarNavItem = ({ label, path, icon }) => {
 // TODO: create a separate file for this component
 const SideBar = () => {
   return (
-    <aside className='left-0 h-screen w-fit bg-zinc-700'>
+    <aside className='sticky h-auto bg-zinc-700'>
       <nav>
         <ul>
           <SideBarNavItem
@@ -44,9 +44,9 @@ const SideBar = () => {
 
 const Root = () => {
   return (
-    <div className='flex'>
-      <SideBar />
-      <main className='w-full bg-slate-50'>
+    <div className='flex h-screen flex-row'>
+      <SideBar className='sticky bottom-0 left-0 top-0' />
+      <main className='w-full overflow-y-scroll bg-slate-100'>
         <Outlet />
       </main>
     </div>
