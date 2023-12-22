@@ -29,16 +29,15 @@ const getAccessToken = publicToken => {
   );
 };
 
-// creates an account record in the database with the given data.
+// creates an account ink record in the database with the given data.
 //
 // @param data        - the account access data which includes the access token and
 //                      item id
 // @param metadata    - the metadata object contains info about the institution the
-//                      user selected and the account ID or IDs, if the
-//                      Account Select view is enabled.
+//                      user selected
 const createAccountRecord = (data, metadata) => {
   return axios.post(
-    'http://localhost:8080/accounts',
+    'http://localhost:8080/links',
     {
       name: metadata.institution.name,
       ...data

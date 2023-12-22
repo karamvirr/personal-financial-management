@@ -1,20 +1,20 @@
 const request = require('supertest');
-const { Account } = require('../models/account');
+const { Link } = require('../models/link');
 
 let app;
 
-describe('/accounts', () => {
+describe('/links', () => {
   beforeEach(() => {
     app = require('../index');
   });
   afterEach(async () => {
     await app.close();
-    await Account.deleteMany({});
+    await Link.deleteMany({});
   });
 
   describe('POST /', () => {
-    it('returns a success message if account is created', async () => {
-      const response = await request(app).post('/accounts').send({
+    it('returns a success message if link is created', async () => {
+      const response = await request(app).post('/links').send({
         name: 'WECU',
         access_token: 'access-sandbox-abc-123',
         item_id: 'Aim3b'
@@ -24,12 +24,12 @@ describe('/accounts', () => {
       expect(response.body).toHaveProperty('id');
       expect(response.body).toHaveProperty(
         'message',
-        'Account successfully created!'
+        'Link successfully created!'
       );
     });
 
-    it('returns an error if account initialize data is missing', async () => {
-      let response = await request(app).post('/accounts').send({
+    it('returns an error if link initialize data is missing', async () => {
+      let response = await request(app).post('/links').send({
         name: 'WECU',
         item_id: 'Aim3b'
       });
@@ -40,7 +40,7 @@ describe('/accounts', () => {
         '"access_token" is required'
       );
 
-      response = await request(app).post('/accounts').send({
+      response = await request(app).post('/links').send({
         access_token: 'access-sandbox-abc-123',
         item_id: 'Aim3b'
       });
@@ -48,7 +48,7 @@ describe('/accounts', () => {
       expect(response.status).toBe(422);
       expect(response.body).toHaveProperty('error', '"name" is required');
 
-      response = await request(app).post('/accounts').send({
+      response = await request(app).post('/links').send({
         name: 'WECU',
         access_token: 'access-sandbox-abc-123'
       });
@@ -58,13 +58,13 @@ describe('/accounts', () => {
   });
 
   describe('GET /', () => {
-    it('returns all accounts', async () => {
-      let response = await request(app).get('/accounts');
+    it('returns all link', async () => {
+      let response = await request(app).get('/links');
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual([]);
 
-      const accounts = [
+      const links = [
         { name: 'WECU', access_token: 'access-token-1', item_id: 'item-id-1' },
         { name: 'Chase', access_token: 'access-token-2', item_id: 'item-id-2' },
         {
@@ -73,14 +73,15 @@ describe('/accounts', () => {
           item_id: 'item-id-3'
         }
       ];
-      await Account.insertMany(accounts);
-      response = await request(app).get('/accounts');
+      await Link.insertMany(links);
+      response = await request(app).get('/links');
 
       expect(response.status).toBe(200);
       expect(response.body.length).toBe(3);
-      expect(response.body.some(a => a.name === 'WECU')).toBeTruthy();
-      expect(response.body.some(a => a.name === 'Chase')).toBeTruthy();
-      expect(response.body.some(a => a.name === 'Fidelity')).toBeTruthy();
+      // sorting validation
+      expect(response.body[0].name).toBe('Chase');
+      expect(response.body[1].name).toBe('Fidelity');
+      expect(response.body[2].name).toBe('WECU');
     });
   });
 });

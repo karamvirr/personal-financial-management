@@ -1,9 +1,9 @@
-// Account represents a user's bank account that has been linked via Plaid.
+// Link represents a user's financial account that has been linked via Plaid.
 
 const Joi = require('joi');
 const mongoose = require('mongoose');
 
-const accountSchema = mongoose.Schema({
+const linkSchema = mongoose.Schema({
   // institution name
   name: {
     type: String,
@@ -19,17 +19,17 @@ const accountSchema = mongoose.Schema({
   }
 });
 
-const Account = mongoose.model('Account', accountSchema);
+const Link = mongoose.model('Link', linkSchema);
 
-const validateAccount = account => {
+const validateLink = link => {
   const schema = Joi.object({
     name: Joi.string().required(),
     access_token: Joi.string().required(),
     item_id: Joi.string().required()
   });
 
-  return schema.validate(account);
+  return schema.validate(link);
 };
 
-exports.Account = Account;
-exports.validate = validateAccount;
+exports.Link = Link;
+exports.validate = validateLink;

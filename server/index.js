@@ -14,7 +14,7 @@ const PORT = process.env.NODE_ENV === 'test' ? 0 : process.env.PORT || 8080;
 require('./db')();
 
 // configure routes
-app.use('/accounts', require('./routes/accounts'));
+app.use('/links', require('./routes/links'));
 app.use('/plaid', require('./routes/plaid'));
 
 app.get('/', (_, res) => {

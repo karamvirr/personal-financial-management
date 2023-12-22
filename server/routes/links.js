@@ -1,19 +1,21 @@
 const express = require('express');
 const router = express.Router();
 
-const { Account, validate } = require('../models/account');
+const { Link, validate } = require('../models/link');
 
-// @route   GET /accounts
-// @desc    Get all accounts
+// @route   GET /links
+// @desc    Get all links, sorted by institution name
 // @access  Public
 router.get('/', (req, res) => {
-  Account.find().then(data => {
-    res.send(data);
-  });
+  Link.find()
+    .sort({ name: 1 })
+    .then(data => {
+      res.send(data);
+    });
 });
 
-// @route   POST /accounts
-// @desc    Create an account
+// @route   POST /links
+// @desc    Create a new link
 // @access  Public
 router.post('/', (req, res) => {
   const { error } = validate(req.body);
@@ -22,18 +24,18 @@ router.post('/', (req, res) => {
   }
   const { name, access_token, item_id } = req.body;
 
-  let account = new Account({
+  let link = new Link({
     name: name,
     access_token: access_token,
     item_id: item_id
   });
 
-  account
+  link
     .save()
     .then(record => {
       res.send({
         id: record._id,
-        message: 'Account successfully created!'
+        message: 'Link successfully created!'
       });
     })
     .catch(error => {
