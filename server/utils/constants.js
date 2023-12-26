@@ -18,11 +18,14 @@ const REQUEST_HEADERS = {
   'Content-Type': 'application/json'
 };
 
+const DEMO_MODE = process.env.DEMO_MODE === 'true';
+
 module.exports = {
   PLAID_CLIENT_ID,
   PLAID_SECRET,
   PLAID_PRODUCTS,
   PLAID_COUNTRY_CODES,
   BASE_URL,
-  REQUEST_HEADERS
+  REQUEST_HEADERS,
+  DEMO_MODE
 };
