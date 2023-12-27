@@ -84,24 +84,24 @@ const updateLinkTransactionsMiddleware = (req, res, next) => {
 };
 
 const updateLinkMiddleware = (req, res, next) => {
-  const index = accounts.findIndex(link => link._id === req.params.id);
-  if (index === -1) {
-    return res.status(404).json({
-      error: 'Not found',
-      message: 'Link not found'
-    });
-  }
-  const link = accounts[index];
-  link.transactions = {
-    data: Math.random() < 0.5 ? TRANSACTIONS : TRANSACTIONS_SECONDARY,
-    updated_at: new Date()
-  };
-  link.balance = {
-    accounts: Math.random() < 0.5 ? BALANCES : BALANCES_SECONDARY,
-    updated_at: new Date()
-  };
-
   if (DEMO_MODE) {
+    const index = accounts.findIndex(link => link._id === req.params.id);
+    if (index === -1) {
+      return res.status(404).json({
+        error: 'Not found',
+        message: 'Link not found'
+      });
+    }
+    const link = accounts[index];
+    link.transactions = {
+      data: Math.random() < 0.5 ? TRANSACTIONS : TRANSACTIONS_SECONDARY,
+      updated_at: new Date()
+    };
+    link.balance = {
+      accounts: Math.random() < 0.5 ? BALANCES : BALANCES_SECONDARY,
+      updated_at: new Date()
+    };
+
     res.send(link);
   } else {
     next();
