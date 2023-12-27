@@ -68,10 +68,15 @@ const randomId = (length = 8) => {
     .slice(2, length + 2);
 };
 
+const sanitizeCategory = category => {
+  return titleize(category.replaceAll('_', ' ').toLowerCase());
+};
+
 module.exports = {
   formatCurrency,
   formatDate,
   titleize,
   pluralize,
-  randomId
+  randomId,
+  sanitizeCategory
 };
