@@ -2,6 +2,8 @@
 
 const Joi = require('joi');
 const mongoose = require('mongoose');
+const { Account } = require('./account');
+const { Transaction } = require('./transaction');
 
 const linkSchema = mongoose.Schema({
   // institution name
@@ -16,6 +18,35 @@ const linkSchema = mongoose.Schema({
   item_id: {
     type: String,
     required: true
+  },
+  created_at: {
+    type: Date,
+    required: true,
+    default: new Date()
+  },
+  balance: {
+    accounts: {
+      type: [Account.schema],
+      default: [],
+      required: false
+    },
+    updated_at: {
+      type: Date,
+      required: false
+    }
+  },
+  transactions: {
+    data: [Transaction.schema],
+    updated_at: {
+      type: Date,
+      required: false
+    },
+    // used for fetching any future updates after the
+    // latest update provided in this response
+    cursor: {
+      type: String,
+      required: false
+    }
   }
 });
 
