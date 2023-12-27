@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Header from '../../components/Header';
+import Header from '../../components/UI/Header';
 import Card from '../../components/UI/Card';
 import { Chart } from 'react-google-charts';
 import axios from 'axios';
@@ -8,8 +8,11 @@ const {
   titleize,
   pluralize,
   formatCurrency,
-  randomId
+  randomId,
+  sanitizeCategory
 } = require('../../utils/helpers');
+
+const sankeyChartOptions = {};
 
 const Overview = () => {
   const [balanceData, setBalanceData] = useState(null);
@@ -74,6 +77,50 @@ const Overview = () => {
     liabilitiesValue += balanceData.loan?.total || 0;
   }
 
+  let sankeyChartDataExpense = null;
+  let sankeyChartDataIncome = null;
+  let totalSpentThisYear = 0;
+  let totalEarnedThisYear = 0;
+  if (transactionData) {
+    sankeyChartDataExpense = [['From', 'To', 'Amount']];
+    sankeyChartDataIncome = [['From', 'To', 'Amount']];
+    const categorySpending = {};
+    const currentYear = new Date().getFullYear();
+    const keys = Object.keys(transactionData).filter(key =>
+      key.startsWith(`${currentYear}`)
+    );
+    keys.forEach(key => {
+      transactionData[key].forEach(transaction => {
+        const amount = transaction.amount;
+        if (amount > 0) {
+          totalSpentThisYear += amount;
+          const category = sanitizeCategory(
+            transaction.personal_finance_category.primary
+          );
+          const merchantName = transaction.merchant_name || 'N/A';
+          if (category !== 'Transfer Out') {
+            sankeyChartDataExpense.push([category, merchantName, amount]);
+            if (!categorySpending[category]) {
+              categorySpending[category] = 0;
+            }
+            categorySpending[category] += amount;
+          }
+        } else {
+          totalEarnedThisYear += -amount;
+          const category = sanitizeCategory(
+            transaction.personal_finance_category.primary
+          );
+          const name = transaction.name || 'N/A';
+          if (category !== 'Transfer In' && category !== 'Travel') {
+            sankeyChartDataIncome.push([name, category, -amount]);
+          }
+        }
+      });
+    });
+    Object.entries(categorySpending).forEach(([category, amount]) => {
+      sankeyChartDataExpense.push(['Total', category, amount]);
+    });
+  }
   return (
     <>
       <Header>
@@ -126,9 +173,7 @@ const Overview = () => {
                             {balance.official_name}
                           </p>
                         </div>
-                        <p className='text-lg'>
-                          {formatCurrency(balance.balances.current)}
-                        </p>
+                        <p>{formatCurrency(balance.balances.current)}</p>
                       </div>
                     ))}
                   </div>
@@ -139,8 +184,47 @@ const Overview = () => {
                 </Card>
               )
           )}
-        <div className='mb-5 w-full p-5'>
-          {/* TODO: montly spending sankey chart */}
+
+        <div className='mb-5 flex justify-between'>
+          {totalEarnedThisYear > 0 && (
+            <Card className='w-[calc(50%-0.625rem)] p-5'>
+              <div className='mb-2.5'>
+                <p className='font-semibold'>
+                  {new Date().getFullYear()} Income
+                </p>
+                <p className='text-xl font-bold'>
+                  {formatCurrency(totalEarnedThisYear)}
+                </p>
+              </div>
+              <Chart
+                chartType='Sankey'
+                width='100%'
+                height='500px'
+                data={sankeyChartDataIncome}
+                options={sankeyChartOptions}
+                className=''
+              />
+            </Card>
+          )}
+          {sankeyChartDataExpense && totalSpentThisYear > 0 && (
+            <Card className='w-[calc(50%-0.625rem)] p-5'>
+              <div className='mb-2.5'>
+                <p className='font-semibold'>
+                  {new Date().getFullYear()} Expenses
+                </p>
+                <p className='text-xl font-bold'>
+                  {formatCurrency(totalSpentThisYear)}
+                </p>
+              </div>
+              <Chart
+                chartType='Sankey'
+                width='100%'
+                height='500px'
+                data={sankeyChartDataExpense}
+                options={sankeyChartOptions}
+              />
+            </Card>
+          )}
         </div>
       </section>
     </>
