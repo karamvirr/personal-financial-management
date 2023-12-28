@@ -75,6 +75,7 @@ const sanitizeCategory = category => {
 module.exports = {
   formatCurrency,
   formatDate,
+  formatTime,
   titleize,
   pluralize,
   randomId,
