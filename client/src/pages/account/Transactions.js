@@ -35,7 +35,7 @@ const Transactions = () => {
   }, []);
 
   const pieChartData = [['Category', 'Amount']];
-  let barChartData = [['Month', 'Amount', { role: 'annotation' }]];
+  let barChartData = [['Month', 'Amount']];
   const monthlyData = {};
   if (transactionData) {
     transactionData.forEach(transaction => {
@@ -68,7 +68,7 @@ const Transactions = () => {
     });
 
     Object.entries(monthlyData).forEach(([key, data]) => {
-      barChartData.push([key, data.expenses, formatCurrency(data.expenses)]);
+      barChartData.push([key, data.expenses]);
     });
     barChartData = barChartData.sort((a, b) => {
       return new Date(a[0]).getTime() - new Date(b[0]).getTime();
@@ -131,6 +131,7 @@ const Transactions = () => {
                 <th scope='col' className='px-6 py-3'>
                   Date
                 </th>
+                <th scope='col'>{/* MERCHANT LOGO */}</th>
                 <th scope='col' className='px-6 py-3'>
                   Name
                 </th>
@@ -151,6 +152,15 @@ const Transactions = () => {
                     key={transaction.transaction_id}>
                     <td className='whitespace-nowrap px-6 py-4'>
                       {transaction.date}
+                    </td>
+                    <td>
+                      {transaction.logo_url && (
+                        <img
+                          className='mx-auto w-8 object-contain'
+                          src={transaction.logo_url}
+                          alt={transaction.name}
+                        />
+                      )}
                     </td>
                     <td className='whitespace-nowrap px-6 py-4'>
                       {transaction.name}
