@@ -1,136 +1,176 @@
-import Header from '../../components/Header';
+import Header from '../../components/UI/Header';
 import { Chart } from 'react-google-charts';
 import Card from '../../components/UI/Card';
+import axios from 'axios';
+
+const {
+  pluralize,
+  formatCurrency,
+  sanitizeCategory
+} = require('../../utils/helpers');
 
 const { useState, useEffect } = require('react');
-const { TRANSACTIONS_FULL: transactions } = require('../../lib/dummy-data');
-
-const options = {
-  pieHole: 0.4,
-  is3D: false
-};
 
 const Transactions = () => {
   const [transactionData, setTransactionData] = useState(null);
-  const [pieChartData, setPieChartData] = useState(null);
 
   useEffect(() => {
-    const data = {};
-    transactions.forEach(transaction => {
-      const category = transaction.personal_finance_category.primary;
-      if (!data[category]) {
-        data[category] = 0;
+    axios
+      .get('http://localhost:8080/links', {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        const data = response.data;
+        // sorts in descending order by transaction date
+        setTransactionData(
+          data
+            .flatMap(link => link.transactions.data)
+            .sort((a, b) => {
+              return new Date(b.date).getTime() - new Date(a.date).getTime();
+            })
+        );
+      });
+  }, []);
+
+  const pieChartData = [['Category', 'Amount']];
+  let barChartData = [['Month', 'Amount', { role: 'annotation' }]];
+  const monthlyData = {};
+  if (transactionData) {
+    transactionData.forEach(transaction => {
+      const category = sanitizeCategory(
+        transaction.personal_finance_category.primary
+      );
+      const monthYear = transaction.date.split('-').slice(0, 2).join('-');
+      const amount = transaction.amount;
+      const index = pieChartData.findIndex(row => row[0] === category);
+
+      if (!monthlyData[monthYear]) {
+        monthlyData[monthYear] = {};
+        monthlyData[monthYear].expenses = 0;
+        monthlyData[monthYear].income = 0;
       }
-      // NOTE: this is for debugging purposes,
       // negative values are when money moves in an account
       //    - credit card payments, direct deposits, refunds
       // positive values are when moves moves out of an account
       //    - debit card purchases
-      if (transaction.amount > 0) {
-        data[category] += transaction.amount;
+      if (amount > 0 && !transaction.name.startsWith('Transfer From')) {
+        monthlyData[monthYear].expenses += amount;
+        if (index === -1) {
+          pieChartData.push([category, amount]);
+        } else {
+          pieChartData[index][1] += amount;
+        }
+      } else {
+        monthlyData[monthYear].income += -amount;
       }
     });
-    console.log('data', [['Category', 'Amount'], ...Object.entries(data)]);
-    setPieChartData([['Category', 'Amount'], ...Object.entries(data)]);
-  }, []);
 
-  const tdClassList = 'border-b border-gray-200 py-1';
-
-  const totalSpend = pieChartData
-    ? pieChartData.reduce((accumulator, currentValue) => {
-        if (+currentValue[1]) {
-          return +currentValue[1] + accumulator;
-        }
-        return 0;
-      }, 0)
-    : 0;
+    Object.entries(monthlyData).forEach(([key, data]) => {
+      barChartData.push([key, data.expenses, formatCurrency(data.expenses)]);
+    });
+    barChartData = barChartData.sort((a, b) => {
+      return new Date(a[0]).getTime() - new Date(b[0]).getTime();
+    });
+  }
 
   return (
     <>
       <Header>
         <h1 className='text-lg font-bold'>Transactions</h1>
       </Header>
-      <section className='mx-auto w-11/12'>
-        {transactions && (
-          <div className='mt-5'>
-            <p className='text-gray-500'>Total Amount</p>
-            <p className='text-2xl font-bold'>${totalSpend.toFixed(2)}</p>
-          </div>
-        )}
-
-        <div className='my-5 flex gap-4'>
-          <select
-            id='year'
-            class='rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'>
-            <option selected>Year</option>
-            <option value='2023'>2023</option>
-            <option value='2022'>2022</option>
-          </select>
-          <select
-            id='countries'
-            class='rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'>
-            <option selected>Month</option>
-            <option value='January'>January</option>
-            <option value='...'>....</option>
-            <option value='December'>December</option>
-          </select>
+      <section className='mx-auto my-5 w-11/12'>
+        <div className='mb-5 flex justify-between'>
+          <Card className='w-[calc(50%-0.625rem)] p-5'>
+            <Chart
+              chartType='PieChart'
+              data={pieChartData}
+              options={{
+                title: 'Expense Distribution',
+                pieHole: 0.4,
+                is3D: false
+              }}
+              width={'100%'}
+              height={'400px'}
+            />
+          </Card>
+          <Card className='w-[calc(50%-0.625rem)] p-5'>
+            <Chart
+              chartType='BarChart'
+              data={barChartData}
+              options={{
+                title: 'Monthly Expenses',
+                hAxis: {
+                  title: 'Amount',
+                  minValue: 0
+                },
+                vAxis: {
+                  title: 'Month',
+                  minValue: 0
+                },
+                legend: { position: 'none' },
+                annotations: {
+                  textStyle: {
+                    fontSize: 12,
+                    italic: true,
+                    color: '#000000'
+                  }
+                }
+              }}
+              width={'100%'}
+              height={'400px'}
+            />
+          </Card>
         </div>
 
-        <div className='mt-5 flex justify-between'>
-          <Card className='w-[calc(50%-0.625rem)]'>
-            {pieChartData && (
-              <Chart
-                chartType='PieChart'
-                width='100%'
-                height='500px'
-                data={pieChartData}
-                options={options}
-              />
-            )}
-          </Card>
-          <Card className='w-[calc(50%-0.625rem)]'>
-            {/* TODO: add a bar chart */}
-          </Card>
-        </div>
-        <Card className='my-5 py-8'>
-          <table className='mx-auto w-11/12'>
-            <thead className='text-left'>
+        <Card>
+          <table className='min-w-full text-left text-sm text-gray-500'>
+            <thead className='bg-gray-50 text-xs text-gray-700'>
               <tr>
-                <th>Date</th>
-                <th></th>
-                <th>Name</th>
-                <th>Category</th>
-                <th className='text-right'>Amount</th>
+                <th scope='col' className='px-6 py-3'>
+                  Date
+                </th>
+                <th scope='col' className='px-6 py-3'>
+                  Name
+                </th>
+                <th scope='col' className='px-6 py-3'>
+                  Category
+                </th>
+                <th scope='col' className='px-6 py-3 text-right'>
+                  Amount
+                </th>
               </tr>
             </thead>
-            <tbody className='text-sm'>
-              {transactions.map(transaction => (
-                <tr key={transaction.transaction_id}>
-                  <td className={tdClassList}>{transaction.date}</td>
-                  <td className={tdClassList}>
-                    {transaction.logo_url ? (
-                      <img
-                        className='h-10 w-10 object-contain'
-                        src={transaction.logo_url}
-                      />
-                    ) : (
-                      <div className='h-10 w-10'></div>
-                    )}
-                  </td>
-                  <td className={tdClassList}>{transaction.name}</td>
-                  <td className={tdClassList}>
-                    {transaction.personal_finance_category.primary}
-                  </td>
-                  <td className={`text-right ${tdClassList}`}>
-                    {transaction.amount}
-                  </td>
-                </tr>
-              ))}
+            <tbody>
+              {transactionData &&
+                transactionData.map(transaction => (
+                  <tr
+                    className='border-b bg-white transition duration-200 ease-in-out hover:bg-gray-50'
+                    scope='row'
+                    key={transaction.transaction_id}>
+                    <td className='whitespace-nowrap px-6 py-4'>
+                      {transaction.date}
+                    </td>
+                    <td className='whitespace-nowrap px-6 py-4'>
+                      {transaction.name}
+                    </td>
+                    <td className='whitespace-nowrap px-6 py-4'>
+                      {sanitizeCategory(
+                        transaction.personal_finance_category.primary
+                      )}
+                    </td>
+                    <td className='whitespace-nowrap px-6 py-4 text-right'>
+                      {formatCurrency(transaction.amount)}
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
-          {transactions && (
-            <p className='ml-10 mt-5 text-xs text-gray-600'>
-              {transactions.length} transaction items
+          {transactionData && (
+            <p className='p-4 text-xs text-gray-500'>
+              {transactionData.length} {'transaction '}
+              {pluralize('item', transactionData.length)}
             </p>
           )}
         </Card>
