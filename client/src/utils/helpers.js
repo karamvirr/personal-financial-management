@@ -35,7 +35,8 @@ const formatDate = date => {
 const formatTime = timestamp => {
   const date = new Date(timestamp);
   const hours = date.getHours();
-  const minutes = date.getMinutes();
+  let minutes = date.getMinutes();
+  minutes = minutes < 10 ? '0' + minutes : minutes;
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();
