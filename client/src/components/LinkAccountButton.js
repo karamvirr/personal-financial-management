@@ -62,7 +62,7 @@ const LinkAccountButton = props => {
         // create account record in database
         createAccountRecord({ access_token, item_id }, metadata).then(
           response => {
-            props.onNewAccount(response.data);
+            props.onNewAccountLink(response.data);
           }
         );
       });
@@ -78,10 +78,11 @@ const LinkAccountButton = props => {
   console.log('render - LinkAccountButton');
   return (
     <button
-      className={`rounded bg-blue-500 px-4 py-2 text-white
-        transition-all duration-100 hover:bg-blue-700 ${
-          !ready && 'cursor-not-allowed opacity-50'
-        }`}
+      className={`mx-auto mt-5 block rounded
+      bg-blue-500 px-6 py-2 text-white transition-all
+      duration-200 hover:bg-blue-700 ${
+        !ready && 'cursor-not-allowed opacity-50'
+      }`}
       onClick={() => open()}
       disabled={!ready}>
       Connect a bank account
