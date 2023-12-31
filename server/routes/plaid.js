@@ -8,7 +8,11 @@ const {
   PLAID_COUNTRY_CODES,
   BASE_URL,
   REQUEST_HEADERS
-} = require('../lib/constants');
+} = require('../utils/constants');
+const {
+  linkTokenMiddleware,
+  accessTokenMiddleware
+} = require('../middleware/plaid');
 
 // @route  POST /plaid/link_token
 // @desc   Creates and returns a link_token, which is required as a parameter
@@ -16,7 +20,7 @@ const {
 //         a financial institution to Plaid).
 //         https://plaid.com/docs/api/tokens/#linktokencreate
 // @access Public
-router.post('/link_token', (_, res) => {
+router.post('/link_token', linkTokenMiddleware, (_, res) => {
   axios
     .post(
       `${BASE_URL}/link/token/create`,
@@ -57,7 +61,7 @@ router.post('/link_token', (_, res) => {
 //          /item/access_token/invaliate on the Plaid API.
 //         https://plaid.com/docs/api/tokens/#itempublic_tokenexchange
 // @access Public
-router.post('/access_token', (req, res) => {
+router.post('/access_token', accessTokenMiddleware, (req, res) => {
   if (!req.body.public_token) {
     return res.status(400).json({
       status: 400,
