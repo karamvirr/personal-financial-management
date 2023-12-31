@@ -137,8 +137,44 @@ const updateLinkTransactionsMiddleware = (req, res, next) => {
       data: Math.random() < 0.5 ? TRANSACTIONS : TRANSACTIONS_SECONDARY,
       updated_at: new Date()
     };
+    link.transactions.data.forEach(transaction => {
+      transaction.account_id = link._id; // This hack will work for now...
+    });
 
     res.send(link);
+  } else {
+    next();
+  }
+};
+
+// @route PUT /links/:id/transactions/:transaction_id
+const updateAccountTransactionMiddleeware = (req, res, next) => {
+  if (DEMO_MODE) {
+    const { id, transaction_id } = req.params;
+    const index = accounts.findIndex(link => link._id === id);
+    if (index === -1) {
+      return res.status(404).json({
+        error: 'Not found',
+        message: 'Link not found'
+      });
+    }
+    const link = accounts[index];
+    const transactionIndex = link.transactions.data.findIndex(
+      transaction => transaction.transaction_id === transaction_id
+    );
+    if (transactionIndex === -1) {
+      return res.status(404).json({
+        error: 'Not found',
+        message: 'Transaction not found'
+      });
+    }
+    const transaction = link.transactions.data[transactionIndex];
+    transaction.note = req.body.note;
+
+    res.send({
+      message: 'Transaction updated',
+      transaction: transaction
+    });
   } else {
     next();
   }
@@ -149,5 +185,6 @@ module.exports = {
   getLinksMiddleware,
   deleteLinkMiddleware,
   updateLinkBalanceMiddleware,
-  updateLinkTransactionsMiddleware
+  updateLinkTransactionsMiddleware,
+  updateAccountTransactionMiddleeware
 };

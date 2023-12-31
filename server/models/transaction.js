@@ -183,6 +183,10 @@ const transactionSchema = mongoose.Schema({
   website: {
     type: String,
     required: false
+  },
+  note: {
+    type: String,
+    required: false
   }
 });
 
@@ -239,7 +243,8 @@ const validateTransaction = transaction => {
     transaction_id: Joi.string().required(),
     transaction_type: Joi.string().required(),
     unofficial_currency_code: Joi.string().optional(),
-    website: Joi.string().optional()
+    website: Joi.string().optional(),
+    note: Joi.string().optional()
   });
 
   return schema.validate(transaction);

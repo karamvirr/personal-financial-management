@@ -7,7 +7,8 @@ const {
   getLinksMiddleware,
   deleteLinkMiddleware,
   updateLinkBalanceMiddleware,
-  updateLinkTransactionsMiddleware
+  updateLinkTransactionsMiddleware,
+  updateAccountTransactionMiddleeware
 } = require('../middleware/links');
 const {
   PLAID_CLIENT_ID,
@@ -157,6 +158,54 @@ router.put(
         message: error.message
       });
     }
+  }
+);
+
+// @route   PUT /links/:id/transactions/:transaction_id
+// @desc    Update a transaction for a link
+// @access  Public
+router.put(
+  '/:id/transactions/:transaction_id',
+  updateAccountTransactionMiddleeware,
+  (req, res) => {
+    const { id, transaction_id } = req.params;
+    const note = req.body.note;
+
+    Link.findById(id)
+      .then(link => {
+        const transactionIndex = link.transactions.data.findIndex(
+          transaction => transaction.transaction_id === transaction_id
+        );
+        if (transactionIndex === -1) {
+          return res.status(404).json({
+            error: 'Not found',
+            message: 'Transaction not found'
+          });
+        }
+        const transaction = link.transactions.data[transactionIndex];
+        transaction.note = note;
+
+        link
+          .save()
+          .then(() => {
+            res.send({
+              message: 'Transaction updated',
+              transaction: transaction
+            });
+          })
+          .catch(error => {
+            res.send({
+              error: error.name,
+              message: error.message
+            });
+          });
+      })
+      .catch(error => {
+        res.send({
+          error: error.name,
+          message: error.message
+        });
+      });
   }
 );
 
