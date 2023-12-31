@@ -73,17 +73,57 @@ const createLinkMiddleware = (_, res, next) => {
   }
 };
 
+// @route DELETE /links/:id
+const deleteLinkMiddleware = (req, res, next) => {
+  if (DEMO_MODE) {
+    const index = accounts.findIndex(link => link._id === req.params.id);
+    if (index === -1) {
+      return res.status(404).json({
+        error: 'Not found',
+        message: 'Link not found'
+      });
+    }
+    accounts.splice(index, 1);
+    res.send({
+      id: req.params.id,
+      message: 'Link deleted'
+    });
+  } else {
+    next();
+  }
+};
+
 // @route PUT /links/:id/balance
 const updateLinkBalanceMiddleware = (req, res, next) => {
-  updateLinkMiddleware(req, res, next);
+  if (DEMO_MODE) {
+    const func = () => {
+      const index = accounts.findIndex(link => link._id === req.params.id);
+      if (index === -1) {
+        return res.status(404).json({
+          error: 'Not found',
+          message: 'Link not found'
+        });
+      }
+      const link = accounts[index];
+      link.balance = {
+        accounts: Math.random() < 0.5 ? BALANCES : BALANCES_SECONDARY,
+        updated_at: new Date()
+      };
+
+      res.send(link);
+    };
+    if (req.originalUrl.includes('balance')) {
+      setTimeout(func, 1500);
+    } else {
+      func();
+    }
+  } else {
+    next();
+  }
 };
 
 // @route PUT /links/:id/transactions
 const updateLinkTransactionsMiddleware = (req, res, next) => {
-  updateLinkMiddleware(req, res, next);
-};
-
-const updateLinkMiddleware = (req, res, next) => {
   if (DEMO_MODE) {
     const index = accounts.findIndex(link => link._id === req.params.id);
     if (index === -1) {
@@ -97,10 +137,6 @@ const updateLinkMiddleware = (req, res, next) => {
       data: Math.random() < 0.5 ? TRANSACTIONS : TRANSACTIONS_SECONDARY,
       updated_at: new Date()
     };
-    link.balance = {
-      accounts: Math.random() < 0.5 ? BALANCES : BALANCES_SECONDARY,
-      updated_at: new Date()
-    };
 
     res.send(link);
   } else {
@@ -111,6 +147,7 @@ const updateLinkMiddleware = (req, res, next) => {
 module.exports = {
   createLinkMiddleware,
   getLinksMiddleware,
+  deleteLinkMiddleware,
   updateLinkBalanceMiddleware,
   updateLinkTransactionsMiddleware
 };
