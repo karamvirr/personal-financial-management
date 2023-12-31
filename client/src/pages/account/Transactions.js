@@ -2,13 +2,9 @@ import Header from '../../components/UI/Header';
 import { Chart } from 'react-google-charts';
 import Card from '../../components/UI/Card';
 import axios from 'axios';
+import TransactionTable from '../../components/TransactionTable';
 
-const {
-  pluralize,
-  formatCurrency,
-  sanitizeCategory
-} = require('../../utils/helpers');
-
+const { sanitizeCategory } = require('../../utils/helpers');
 const { useState, useEffect } = require('react');
 
 const Transactions = () => {
@@ -82,108 +78,54 @@ const Transactions = () => {
       </Header>
       <section className='mx-auto my-5 w-11/12'>
         <div className='mb-5 flex justify-between'>
-          <Card className='w-[calc(50%-0.625rem)] p-5'>
-            <Chart
-              chartType='PieChart'
-              data={pieChartData}
-              options={{
-                title: 'Expense Distribution',
-                pieHole: 0.4,
-                is3D: false
-              }}
-              width={'100%'}
-              height={'400px'}
-            />
-          </Card>
-          <Card className='w-[calc(50%-0.625rem)] p-5'>
-            <Chart
-              chartType='BarChart'
-              data={barChartData}
-              options={{
-                title: 'Monthly Expenses',
-                hAxis: {
-                  title: 'Amount',
-                  minValue: 0
-                },
-                vAxis: {
-                  title: 'Month',
-                  minValue: 0
-                },
-                legend: { position: 'none' },
-                annotations: {
-                  textStyle: {
-                    fontSize: 12,
-                    italic: true,
-                    color: '#000000'
-                  }
-                }
-              }}
-              width={'100%'}
-              height={'400px'}
-            />
-          </Card>
+          {pieChartData.length > 1 && (
+            <Card className='w-[calc(50%-0.625rem)] p-5'>
+              <Chart
+                chartType='PieChart'
+                data={pieChartData}
+                options={{
+                  title: 'Expense Distribution',
+                  pieHole: 0.4,
+                  is3D: false
+                }}
+                width={'100%'}
+                height={'400px'}
+              />
+            </Card>
+          )}
+          {barChartData.length > 1 && (
+            <Card className='w-[calc(50%-0.625rem)] p-5'>
+              <Chart
+                chartType='BarChart'
+                data={barChartData}
+                options={{
+                  title: 'Monthly Expenses',
+                  hAxis: {
+                    title: 'Amount',
+                    minValue: 0
+                  },
+                  vAxis: {
+                    title: 'Month',
+                    minValue: 0
+                  },
+                  legend: { position: 'none' },
+                  annotations: {
+                    textStyle: {
+                      fontSize: 12,
+                      italic: true,
+                      color: '#000000'
+                    }
+                  },
+                  colors: ['#f44336']
+                }}
+                width={'100%'}
+                height={'400px'}
+              />
+            </Card>
+          )}
         </div>
 
-        <Card>
-          <table className='min-w-full text-left text-sm text-gray-500'>
-            <thead className='bg-gray-50 text-xs text-gray-700'>
-              <tr>
-                <th scope='col' className='px-6 py-3'>
-                  Date
-                </th>
-                <th scope='col'>{/* MERCHANT LOGO */}</th>
-                <th scope='col' className='px-6 py-3'>
-                  Name
-                </th>
-                <th scope='col' className='px-6 py-3'>
-                  Category
-                </th>
-                <th scope='col' className='px-6 py-3 text-right'>
-                  Amount
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {transactionData &&
-                transactionData.map(transaction => (
-                  <tr
-                    className='border-b bg-white transition duration-200 ease-in-out hover:bg-gray-50'
-                    scope='row'
-                    key={transaction.transaction_id}>
-                    <td className='whitespace-nowrap px-6 py-4'>
-                      {transaction.date}
-                    </td>
-                    <td>
-                      {transaction.logo_url && (
-                        <img
-                          className='mx-auto w-8 object-contain'
-                          src={transaction.logo_url}
-                          alt={transaction.name}
-                        />
-                      )}
-                    </td>
-                    <td className='whitespace-nowrap px-6 py-4'>
-                      {transaction.name}
-                    </td>
-                    <td className='whitespace-nowrap px-6 py-4'>
-                      {sanitizeCategory(
-                        transaction.personal_finance_category.primary
-                      )}
-                    </td>
-                    <td className='whitespace-nowrap px-6 py-4 text-right'>
-                      {formatCurrency(transaction.amount)}
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-          {transactionData && (
-            <p className='p-4 text-xs text-gray-500'>
-              {transactionData.length} {'transaction '}
-              {pluralize('item', transactionData.length)}
-            </p>
-          )}
-        </Card>
+        <TransactionTable data={transactionData} />
       </section>
     </>
   );
