@@ -106,9 +106,12 @@ router.put('/:id/balance', updateLinkBalanceMiddleware, (req, res) => {
       res.send(link);
     })
     .catch(error => {
-      res.send({
-        error: error.name,
-        message: error.message
+      res.status(error.response.status).send({
+        status: error.response.status,
+        text: error.response.statusText,
+        code: error.response.data.error_code,
+        message: error.response.data.error_message,
+        documentation_url: error.response.data.documentation_url
       });
     });
 });
@@ -153,9 +156,12 @@ router.put(
       );
       res.send(updatedLink);
     } catch (error) {
-      res.send({
-        error: error.name,
-        message: error.message
+      res.status(error.response.status).send({
+        status: error.response.status,
+        text: error.response.statusText,
+        code: error.response.data.error_code,
+        message: error.response.data.error_message,
+        documentation_url: error.response.data.documentation_url
       });
     }
   }

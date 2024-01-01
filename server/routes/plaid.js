@@ -46,10 +46,12 @@ router.post('/link_token', linkTokenMiddleware, (_, res) => {
       res.send(response.data);
     })
     .catch(error => {
-      res.status(error.response.status).json({
+      res.status(error.response.status).send({
         status: error.response.status,
-        code: error.code,
-        message: error.message
+        text: error.response.statusText,
+        code: error.response.data.error_code,
+        message: error.response.data.error_message,
+        documentation_url: error.response.data.documentation_url
       });
     });
 });
@@ -86,10 +88,12 @@ router.post('/access_token', accessTokenMiddleware, (req, res) => {
       res.send(response.data);
     })
     .catch(error => {
-      res.status(error.response.status).json({
+      res.status(error.response.status).send({
         status: error.response.status,
-        code: error.code,
-        message: error.message
+        text: error.response.statusText,
+        code: error.response.data.error_code,
+        message: error.response.data.error_message,
+        documentation_url: error.response.data.documentation_url
       });
     });
 });

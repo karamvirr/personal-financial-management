@@ -57,21 +57,29 @@ const LinkAccountButton = props => {
     token: linkToken,
     onSuccess: (publicToken, metadata) => {
       // swap public token for permanent access token
-      getAccessToken(publicToken).then(accessData => {
-        const { access_token, item_id } = accessData.data;
-        // create account record in database
-        createAccountRecord({ access_token, item_id }, metadata).then(
-          response => {
-            props.onNewAccountLink(response.data);
-          }
-        );
-      });
+      getAccessToken(publicToken)
+        .then(accessData => {
+          const { access_token, item_id } = accessData.data;
+          // create account record in database
+          createAccountRecord({ access_token, item_id }, metadata)
+            .then(response => {
+              props.onNewAccountLink(response.data);
+            })
+            .catch(error => {
+              props.onFailure(error, 'Create account error');
+            });
+        })
+        .catch(error => {
+          props.onFailure(error, 'Access token error');
+        });
     }
   });
 
   useEffect(() => {
     generateLinkToken().then(response => {
       setLinkToken(response.data.link_token);
+    }).catch(error => {
+      props.onFailure(error, 'Link token error');
     });
   }, []);
 

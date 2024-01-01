@@ -8,41 +8,49 @@ import AccountLinkSkeleton from './UI/skeletons/AccountLinkSkeleton';
 const { formatCurrency, formatTime, pluralize } = require('../utils/helpers');
 const { useEffect, useState } = require('react');
 
-const AccountLink = ({ data, onUpdate }) => {
+const AccountLink = ({ data, onUpdate, onFailure }) => {
   const [isLoading, setIsLoading] = useState(
     !data.balance.updated_at || !data.transactions.updated_at
   );
 
   const fetchBalanceData = async () => {
-    const response = await axios.put(
-      'http://localhost:8080/links/' + data._id + '/balance',
-      {},
-      {
-        headers: {
-          'Content-Type': 'application/json'
+    try {
+      const response = await axios.put(
+        'http://localhost:8080/links/' + data._id + '/balance',
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
         }
-      }
-    );
-    onUpdate({
-      method: 'update',
-      record: response.data
-    });
+      );
+      onUpdate({
+        method: 'update',
+        record: response.data
+      });
+    } catch (error) {
+      onFailure(error, data.name);
+    }
   };
 
   const fetchTransactionsData = async () => {
-    const response = await axios.put(
-      'http://localhost:8080/links/' + data._id + '/transactions',
-      {},
-      {
-        headers: {
-          'Content-Type': 'application/json'
+    try {
+      const response = await axios.put(
+        'http://localhost:8080/links/' + data._id + '/transactions',
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
         }
-      }
-    );
-    onUpdate({
-      method: 'update',
-      record: response.data
-    });
+      );
+      onUpdate({
+        method: 'update',
+        record: response.data
+      });
+    } catch (error) {
+      onFailure(error, data.name);
+    }
   };
 
   const refreshAccountLinkHandler = async () => {
