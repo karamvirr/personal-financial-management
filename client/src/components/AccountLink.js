@@ -85,7 +85,7 @@ const AccountLink = ({ data, onUpdate, onFailure }) => {
         <Card className='mx-auto w-3/5'>
           <div
             className='flex items-center justify-between
-        bg-neutral-200 px-5 py-2.5 ring-1 ring-neutral-300'>
+            bg-neutral-200 px-5 py-2.5 ring-1 ring-neutral-300'>
             <div className='flex items-center gap-2.5'>
               <MdAccountBalance className='text-xl' />
               <p className='text-xl font-semibold'>{data.name}</p>
