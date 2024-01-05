@@ -6,8 +6,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'linkedin': '#0177B5',
+        'linkedin': '#00A0DC',
         'github': '#FAFBFC'
+      },
+      keyframes: {
+        fill: {
+          '0%': { width: '0%' },
+          '100%': { width: 'attr(data-value)' }
+        }
+      },
+      animation: {
+        fill: 'fill 1s ease-in-out forwards'
       }
     },
   },
