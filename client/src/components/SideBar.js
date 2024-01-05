@@ -4,6 +4,8 @@ import { PiListMagnifyingGlass } from 'react-icons/pi';
 import SideBarNavItem from './SideBarNavItem';
 import { FaGithub } from 'react-icons/fa';
 import { FaLinkedin } from 'react-icons/fa';
+import { RiBarChart2Line } from 'react-icons/ri';
+
 import SocialLink from './SocialLink';
 
 const SideBar = () => {
@@ -15,6 +17,11 @@ const SideBar = () => {
             label='Accounts'
             path='/account/accounts'
             icon={<GoStack />}
+          />
+          <SideBarNavItem
+            label='Cash Flow'
+            path='/account/cash-flow'
+            icon={<RiBarChart2Line />}
           />
           <SideBarNavItem
             label='Overview'
