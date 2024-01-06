@@ -5,6 +5,14 @@ const formatCurrency = value => {
   });
 };
 
+const formatPercent = value => {
+  return value.toLocaleString('en-US', {
+    style: 'percent',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+};
+
 // 'x (seconds, minutes, hours, days, months, years) ago' format
 const formatDate = date => {
   const now = new Date();
@@ -75,6 +83,7 @@ const sanitizeCategory = category => {
 
 module.exports = {
   formatCurrency,
+  formatPercent,
   formatDate,
   formatTime,
   titleize,
