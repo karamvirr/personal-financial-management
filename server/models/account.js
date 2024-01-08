@@ -9,7 +9,7 @@ const accountSchema = mongoose.Schema({
   balances: {
     available: {
       type: Number,
-      required: true
+      required: false
     },
     current: {
       type: Number,
@@ -56,7 +56,7 @@ const validateAccount = account => {
   const schema = Joi.object({
     account_id: Joi.string().required(),
     balances: Joi.object({
-      available: Joi.number().required(),
+      available: Joi.number().optional(),
       current: Joi.number().required(),
       iso_currency_code: Joi.string().required(),
       limit: Joi.number().optional(),

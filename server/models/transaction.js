@@ -94,7 +94,7 @@ const transactionSchema = mongoose.Schema({
   },
   merchant_name: {
     type: String,
-    required: true
+    required: false
   },
   name: {
     type: String,
@@ -102,7 +102,7 @@ const transactionSchema = mongoose.Schema({
   },
   payment_channel: {
     type: String,
-    required: true
+    required: false
   },
   payment_meta: {
     by_order_of: {
@@ -140,7 +140,7 @@ const transactionSchema = mongoose.Schema({
   },
   pending: {
     type: Boolean,
-    required: true
+    required: false
   },
   pending_transaction_id: {
     type: String,
@@ -174,7 +174,7 @@ const transactionSchema = mongoose.Schema({
   },
   transaction_type: {
     type: String,
-    required: true
+    required: false
   },
   unofficial_currency_code: {
     type: String,
@@ -218,9 +218,9 @@ const validateTransaction = transaction => {
     }),
     logo_url: Joi.string().optional(),
     merchant_entity_id: Joi.string().optional(),
-    merchant_name: Joi.string().required(),
+    merchant_name: Joi.string().optional(),
     name: Joi.string().required(),
-    payment_channel: Joi.string().required(),
+    payment_channel: Joi.string().optional(),
     payment_meta: Joi.object({
       by_order_of: Joi.string().optional(),
       payee: Joi.string().optional(),
@@ -231,7 +231,7 @@ const validateTransaction = transaction => {
       reason: Joi.string().optional(),
       reference_number: Joi.string().optional()
     }),
-    pending: Joi.boolean().required(),
+    pending: Joi.boolean().optional(),
     pending_transaction_id: Joi.string().optional(),
     personal_finance_category: Joi.object({
       confidence_level: Joi.string().optional(),
@@ -241,7 +241,7 @@ const validateTransaction = transaction => {
     personal_finance_category_icon_url: Joi.string().optional(),
     transaction_code: Joi.string().optional(),
     transaction_id: Joi.string().required(),
-    transaction_type: Joi.string().required(),
+    transaction_type: Joi.string().optional(),
     unofficial_currency_code: Joi.string().optional(),
     website: Joi.string().optional(),
     note: Joi.string().optional()

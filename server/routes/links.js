@@ -174,13 +174,15 @@ router.put(
   '/:id/transactions/:transaction_id',
   updateAccountTransactionMiddleeware,
   (req, res) => {
-    const { id, transaction_id } = req.params;
-    const note = req.body.note;
+    const id = req.params.id;
 
     Link.findById(id)
       .then(link => {
+        const note = req.body.note;
+        const transaction_id = req.params.transaction_id.toString();
+
         const transactionIndex = link.transactions.data.findIndex(
-          transaction => transaction.transaction_id === transaction_id
+          transaction => transaction._id.toString() === transaction_id
         );
         if (transactionIndex === -1) {
           return res.status(404).json({
