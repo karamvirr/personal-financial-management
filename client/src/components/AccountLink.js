@@ -4,6 +4,7 @@ import { IoMdRefresh } from 'react-icons/io';
 import { MdDelete } from 'react-icons/md';
 import Card from './UI/Card';
 import AccountLinkSkeleton from './UI/skeletons/AccountLinkSkeleton';
+import LinkAccountReauthentication from './LinkAccountReauthentication';
 
 const { formatCurrency, formatTime, pluralize } = require('../utils/helpers');
 const { useEffect, useState } = require('react');
@@ -12,6 +13,13 @@ const AccountLink = ({ data, onUpdate, onFailure }) => {
   const [isLoading, setIsLoading] = useState(
     !data.balance.updated_at || !data.transactions.updated_at
   );
+  const [error, setError] = useState(null);
+
+  const errorHandler = error => {
+    setError(error);
+    setIsLoading(false);
+    onFailure(error, data.name);
+  };
 
   const fetchBalanceData = async () => {
     try {
@@ -29,7 +37,7 @@ const AccountLink = ({ data, onUpdate, onFailure }) => {
         record: response.data
       });
     } catch (error) {
-      onFailure(error, data.name);
+      errorHandler(error);
     }
   };
 
@@ -49,12 +57,11 @@ const AccountLink = ({ data, onUpdate, onFailure }) => {
         record: response.data
       });
     } catch (error) {
-      onFailure(error, data.name);
+      errorHandler(error);
     }
   };
 
   const refreshAccountLinkHandler = async () => {
-    setIsLoading(true);
     await fetchBalanceData();
     await fetchTransactionsData();
     setIsLoading(false);
@@ -77,6 +84,12 @@ const AccountLink = ({ data, onUpdate, onFailure }) => {
     }
   }, [isLoading]);
 
+  let isItemLoginRequiredError = false;
+  if (error) {
+    const errorData = error.response.data;
+    isItemLoginRequiredError = errorData.code === 'ITEM_LOGIN_REQUIRED';
+  }
+
   return (
     <>
       {isLoading ? (
@@ -91,12 +104,14 @@ const AccountLink = ({ data, onUpdate, onFailure }) => {
               <p className='text-xl font-semibold'>{data.name}</p>
             </div>
             <div className='flex gap-2.5'>
-              <IoMdRefresh
-                className='cursor-pointer text-lg'
-                onClick={() => {
-                  setIsLoading(true);
-                }}
-              />
+              {!isItemLoginRequiredError && (
+                <IoMdRefresh
+                  className='cursor-pointer text-lg'
+                  onClick={() => {
+                    setIsLoading(true);
+                  }}
+                />
+              )}
               <MdDelete
                 className='cursor-pointer text-lg'
                 onClick={deleteAccountLinkHandler}
@@ -104,32 +119,43 @@ const AccountLink = ({ data, onUpdate, onFailure }) => {
             </div>
           </div>
           <div className='px-5 pb-5'>
-            <div>
-              <ul>
-                {data.balance.accounts.map(account => (
-                  <li key={account.account_id}>
-                    <div className='my-2.5 flex flex-row justify-between'>
-                      <div>
-                        <p>{account.name}</p>
-                        <p className='text-xs text-gray-500'>
-                          Ending in {account.mask}
-                        </p>
+            {isItemLoginRequiredError ? (
+              <LinkAccountReauthentication
+                accessToken={data.access_token}
+                onSuccess={() => {
+                  setError(null);
+                  setIsLoading(true);
+                }}
+                onFailure={onFailure}
+              />
+            ) : (
+              <div>
+                <ul>
+                  {data.balance.accounts.map(account => (
+                    <li key={account.account_id}>
+                      <div className='mt-2.5 flex flex-row justify-between'>
+                        <div>
+                          <p>{account.name}</p>
+                          <p className='text-xs text-gray-500'>
+                            Ending in {account.mask}
+                          </p>
+                        </div>
+                        <div>
+                          <p className='text-right'>
+                            {formatCurrency(account.balances.current)}
+                          </p>
+                          <p className='text-xs text-gray-500'>
+                            Last updated: {formatTime(data.balance.updated_at)}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className='text-right'>
-                          {formatCurrency(account.balances.current)}
-                        </p>
-                        <p className='text-xs text-gray-500'>
-                          Last updated: {formatTime(data.balance.updated_at)}
-                        </p>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             {data.transactions.updated_at && (
-              <p className='text-xs text-gray-500'>
+              <p className='mt-2.5 text-xs text-gray-500'>
                 {data.transactions.data.length}{' '}
                 {pluralize('transaction', data.transactions.data.length)}
               </p>
