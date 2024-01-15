@@ -1,17 +1,20 @@
 import axios from 'axios';
 
-const { formatCurrency, sanitizeCategory } = require('../utils/helpers');
+const {
+  formatCurrency,
+  sanitizeCategory,
+  getTransactionName
+} = require('../utils/helpers');
 const { useState } = require('react');
 
-const TransactionTableRow = ({ transaction }) => {
+const TransactionTableRow = ({ transaction, index }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [note, setNote] = useState(transaction.note);
 
   const saveTransactionHandler = () => {
-    console.log('saveTransactionHandler');
     axios
       .put(
-        `http://localhost:8080/links/${transaction.account_id}/transactions/${transaction.transaction_id}`,
+        `http://localhost:8080/links/${transaction.link_id}/transactions/${transaction._id}`,
         {
           note: note
         },
@@ -31,10 +34,10 @@ const TransactionTableRow = ({ transaction }) => {
       className='cursor-pointer border-b bg-white transition duration-200
         ease-in-out hover:bg-gray-50'
       scope='row'
-      key={transaction.transaction_id}
+      key={`${transaction._id}-${index}`}
       onClick={() => setIsEditing(!isEditing)}>
       <td className='whitespace-nowrap px-6 py-4'>{transaction.date}</td>
-      <td>
+      <td className='w-8 min-w-fit max-w-max'>
         {transaction.logo_url && (
           <img
             className='mx-auto w-8 object-contain'
@@ -43,7 +46,9 @@ const TransactionTableRow = ({ transaction }) => {
           />
         )}
       </td>
-      <td className='whitespace-nowrap px-6 py-4'>{transaction.name}</td>
+      <td className='whitespace-nowrap px-6 py-4'>
+        {getTransactionName(transaction)}
+      </td>
       <td className='whitespace-nowrap px-6 py-4'>
         {sanitizeCategory(transaction.personal_finance_category.primary)}
       </td>
@@ -81,6 +86,7 @@ const TransactionTableRow = ({ transaction }) => {
             className='rounded-md bg-rose-500 px-4 py-2 text-xs text-white'
             onClick={event => {
               event.stopPropagation();
+              setNote(transaction.note);
               setIsEditing(false);
             }}>
             Cancel
