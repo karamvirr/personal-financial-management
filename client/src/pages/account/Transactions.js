@@ -1,14 +1,25 @@
-import Header from '../../components/UI/Header';
-import { Chart } from 'react-google-charts';
-import Card from '../../components/UI/Card';
 import axios from 'axios';
-import TransactionTable from '../../components/TransactionTable';
 
-const { sanitizeCategory } = require('../../utils/helpers');
+import Header from '../../components/UI/Header';
+import Card from '../../components/UI/Card';
+import TransactionTable from '../../components/TransactionTable';
+import DropdownMenu from '../../components/DropdownMenu';
+import SpendingDistributionPieChart from '../../components/data-visualisations/SpendingDistributionPieChart';
+import MonthlySpendingBarChart from '../../components/data-visualisations/MonthlySpendingBarChart';
 const { useState, useEffect } = require('react');
+const {
+  getTransactionMonths,
+  formatDate,
+  isObjectEmpty
+} = require('../../utils/helpers');
 
 const Transactions = () => {
+  // format: [{ transaction }, ...}]
   const [transactionData, setTransactionData] = useState(null);
+  // format: { 'MMMM YYYY': [{transaction}, ...}]}
+  const [transactionDataMap, setTransactionDataMap] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedOption, setSelectedOption] = useState(null);
 
   useEffect(() => {
     axios
@@ -18,56 +29,85 @@ const Transactions = () => {
         }
       })
       .then(response => {
-        const data = response.data;
-        // sorts in descending order by transaction date
-        setTransactionData(
-          data
-            .flatMap(link => link.transactions.data)
-            .sort((a, b) => {
-              return new Date(b.date).getTime() - new Date(a.date).getTime();
-            })
-        );
+        const parsedTransactionData = response.data
+          .flatMap(link => {
+            return link.transactions.data.map(transaction => {
+              return {
+                ...transaction,
+                link_id: link._id
+              };
+            });
+          })
+          // sorts in descending order by transaction date
+          .sort((a, b) => {
+            return new Date(b.date).getTime() - new Date(a.date).getTime();
+          });
+
+        const parsedMapData = {};
+        parsedTransactionData.forEach(transaction => {
+          // format: 'YYYY-MM-DD'
+          const date = transaction.date;
+          // format: 'YYYY-MM'
+          const yearMonth = date.split('-').slice(0, 2).join('-');
+          // format: 'MMMM YYYY'
+          const key = formatDate(yearMonth);
+
+          if (!parsedMapData[key]) {
+            parsedMapData[key] = [];
+          }
+          parsedMapData[key].push(transaction);
+        });
+
+        setTransactionData(parsedTransactionData);
+        setTransactionDataMap(parsedMapData);
       });
   }, []);
 
-  const pieChartData = [['Category', 'Amount']];
-  let barChartData = [['Month', 'Amount']];
-  const monthlyData = {};
-  if (transactionData) {
-    transactionData.forEach(transaction => {
-      const category = sanitizeCategory(
-        transaction.personal_finance_category.primary
-      );
-      const monthYear = transaction.date.split('-').slice(0, 2).join('-');
-      const amount = transaction.amount;
-      const index = pieChartData.findIndex(row => row[0] === category);
+  const onDropdownSelectHandler = month => {
+    setSelectedOption(month);
+  };
 
-      if (!monthlyData[monthYear]) {
-        monthlyData[monthYear] = {};
-        monthlyData[monthYear].expenses = 0;
-        monthlyData[monthYear].income = 0;
-      }
-      // negative values are when money moves in an account
-      //    - credit card payments, direct deposits, refunds
-      // positive values are when moves moves out of an account
-      //    - debit card purchases
-      if (amount > 0 && !transaction.name.startsWith('Transfer From')) {
-        monthlyData[monthYear].expenses += amount;
-        if (index === -1) {
-          pieChartData.push([category, amount]);
-        } else {
-          pieChartData[index][1] += amount;
-        }
-      } else {
-        monthlyData[monthYear].income += -amount;
-      }
-    });
+  const onSearchHandler = query => {
+    setSearchQuery(query);
+  };
 
-    Object.entries(monthlyData).forEach(([key, data]) => {
-      barChartData.push([key, data.expenses]);
+  const onSortHandler = isAscending => {
+    const sort = transactions => {
+      const copy = [...transactions];
+      if (isAscending) {
+        return copy.sort((a, b) => {
+          return new Date(a.date).getTime() - new Date(b.date).getTime();
+        });
+      }
+      return copy.sort((a, b) => {
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      });
+    };
+    setTransactionData(prevState => {
+      return sort(prevState);
     });
-    barChartData = barChartData.sort((a, b) => {
-      return new Date(a[0]).getTime() - new Date(b[0]).getTime();
+    setTransactionDataMap(prevState => {
+      const copy = { ...prevState };
+      for (const key in copy) {
+        copy[key] = sort(copy[key]);
+      }
+      return copy;
+    });
+  };
+
+  let filteredTransactionData = null;
+  if (selectedOption && transactionData && !isObjectEmpty(transactionDataMap)) {
+    // set table data
+    if (selectedOption === 'All') {
+      filteredTransactionData = transactionData;
+    } else {
+      filteredTransactionData = transactionDataMap[selectedOption];
+    }
+
+    filteredTransactionData = filteredTransactionData.filter(transaction => {
+      const name = transaction.name.toLowerCase().trim();
+      const query = searchQuery.toLowerCase().trim();
+      return name.includes(query);
     });
   }
 
@@ -77,55 +117,43 @@ const Transactions = () => {
         <h1 className='text-lg font-bold'>Transactions</h1>
       </Header>
       <section className='mx-auto my-5 w-11/12'>
-        <div className='mb-5 flex justify-between'>
-          {pieChartData.length > 1 && (
+        {transactionData && !isObjectEmpty(transactionDataMap) && (
+          <DropdownMenu
+            className='mb-5'
+            label='Filter by month'
+            items={getTransactionMonths(transactionData)}
+            onSelect={onDropdownSelectHandler}
+          />
+        )}
+        {selectedOption && transactionDataMap && (
+          <div className='mb-5 flex justify-between'>
             <Card className='w-[calc(50%-0.625rem)] p-5'>
-              <Chart
-                chartType='PieChart'
-                data={pieChartData}
-                options={{
-                  title: 'Expense Distribution',
-                  pieHole: 0.4,
-                  is3D: false
-                }}
-                width={'100%'}
-                height={'400px'}
+              <p className='text-sm font-semibold text-gray-500'>
+                Spending Distribution
+              </p>
+              <SpendingDistributionPieChart
+                transactionData={transactionDataMap}
+                option={selectedOption}
               />
             </Card>
-          )}
-          {barChartData.length > 1 && (
             <Card className='w-[calc(50%-0.625rem)] p-5'>
-              <Chart
-                chartType='BarChart'
-                data={barChartData}
-                options={{
-                  title: 'Monthly Expenses',
-                  hAxis: {
-                    title: 'Amount',
-                    minValue: 0
-                  },
-                  vAxis: {
-                    title: 'Month',
-                    minValue: 0
-                  },
-                  legend: { position: 'none' },
-                  annotations: {
-                    textStyle: {
-                      fontSize: 12,
-                      italic: true,
-                      color: '#000000'
-                    }
-                  },
-                  colors: ['#f44336']
-                }}
-                width={'100%'}
-                height={'400px'}
+              <p className='text-sm font-semibold text-gray-500'>
+                Monthly Total
+              </p>
+              <MonthlySpendingBarChart
+                transactionData={transactionDataMap}
+                option={selectedOption}
               />
             </Card>
-          )}
-        </div>
-
-        <TransactionTable data={transactionData} />
+          </div>
+        )}
+        {filteredTransactionData && (
+          <TransactionTable
+            data={filteredTransactionData}
+            onSort={onSortHandler}
+            onSearch={onSearchHandler}
+          />
+        )}
       </section>
     </>
   );
