@@ -13,30 +13,18 @@ const formatPercent = value => {
   });
 };
 
-// 'x (seconds, minutes, hours, days, months, years) ago' format
-const formatDate = date => {
-  const now = new Date();
-  const then = new Date(date);
-  const diff = now - then;
-  const seconds = Math.floor(diff / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(seconds / 60);
-  const days = Math.floor(seconds / 60);
-  const months = Math.floor(seconds / 60);
-  const years = Math.floor(seconds / 60);
-
-  if (seconds < 60) {
-    return `${seconds} seconds ago`;
-  } else if (minutes < 60) {
-    return `${minutes} minutes ago`;
-  } else if (hours < 24) {
-    return `${hours} hours ago`;
-  } else if (days < 30) {
-    return `${days} days ago`;
-  } else if (months < 12) {
-    return `${months} months ago`;
-  }
-  return `${years} years ago`;
+// formats the given date string to MMMM YYYY format
+// example: 2024-01 => January 2024
+//
+// @return string in MMMM YYYY format
+const formatDate = dateStr => {
+  const split = dateStr.split('-');
+  const monthInt = +split[1];
+  const year = split[0];
+  const month = new Date(year, monthInt - 1).toLocaleString('default', {
+    month: 'long'
+  });
+  return `${month} ${year}`;
 };
 
 // MM/DD/YYYY HH:MM:SS format (12 hour clock)
@@ -78,7 +66,53 @@ const randomId = (length = 8) => {
 };
 
 const sanitizeCategory = category => {
-  return titleize(category.replaceAll('_', ' ').toLowerCase());
+  return titleize(category.trim().replaceAll('_', ' ').toLowerCase());
+};
+
+const getTransactionMonths = transactionData => {
+  if (!transactionData) {
+    return [];
+  }
+  const months = new Set();
+  transactionData.forEach(transaction => {
+    const date = transaction.date;
+    // format: YYYY-MM
+    const parsedMonth = date.split('-').slice(0, 2).join('-');
+    const month = formatDate(parsedMonth);
+    months.add(month);
+  });
+  return Array.from(months).sort((a, b) => {
+    return new Date(b).getTime() - new Date(a).getTime();
+  });
+};
+
+const getTransactionCategories = transactions => {
+  const categoriesSet = new Set([]);
+  transactions.map(transaction => {
+    categoriesSet.add(
+      sanitizeCategory(transaction.personal_finance_category.primary)
+    );
+  });
+
+  return Array.from(categoriesSet).sort();
+};
+
+const getColor = value => {
+  if (value < 0) {
+    return 'text-rose-500';
+  }
+  if (value > 0) {
+    return 'text-emerald-500';
+  }
+  return '';
+};
+
+const getTransactionName = transaction => {
+  return titleize(transaction.merchant_name || transaction.name);
+};
+
+const isObjectEmpty = obj => {
+  return Object.keys(obj).length === 0;
 };
 
 module.exports = {
@@ -88,6 +122,11 @@ module.exports = {
   formatTime,
   titleize,
   pluralize,
+  isObjectEmpty,
+  getTransactionName,
   randomId,
-  sanitizeCategory
+  getTransactionCategories,
+  sanitizeCategory,
+  getTransactionMonths,
+  getColor
 };
