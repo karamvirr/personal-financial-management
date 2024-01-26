@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Header from '../../components/UI/Header';
-import AccountLink from '../../components/AccountLink';
-import LinkAccountButton from '../../components/LinkAccountButton';
+import Header from '../components/UI/Header';
+import AccountLink from '../components/AccountLink';
+import LinkAccountButton from '../components/LinkAccountButton';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 

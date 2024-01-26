@@ -1,20 +1,23 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Home from './pages/Home';
-import Accounts from './pages/account/Accounts';
-import CashFlow from './pages/account/CashFlow';
-import Transactions from './pages/account/Transactions';
-import Overview from './pages/account/Overview';
-import Root from './pages/account/Root';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate
+} from 'react-router-dom';
+import Accounts from './pages/Accounts';
+import CashFlow from './pages/CashFlow';
+import Transactions from './pages/Transactions';
+import Overview from './pages/Overview';
+import Root from './pages/Root';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Home />
-  },
-  {
-    path: '/account',
     element: <Root />,
     children: [
+      {
+        index: true,
+        element: <Navigate to='/accounts' replace />
+      },
       { path: 'accounts', element: <Accounts /> },
       { path: 'cash-flow', element: <CashFlow /> },
       { path: 'transactions', element: <Transactions /> },

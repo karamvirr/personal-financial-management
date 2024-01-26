@@ -15,22 +15,22 @@ const SideBar = () => {
         <ul>
           <SideBarNavItem
             label='Accounts'
-            path='/account/accounts'
+            path='/accounts'
             icon={<GoStack />}
           />
           <SideBarNavItem
             label='Cash Flow'
-            path='/account/cash-flow'
+            path='/cash-flow'
             icon={<RiBarChart2Line />}
           />
           <SideBarNavItem
             label='Overview'
-            path='/account/overview'
+            path='/overview'
             icon={<PiListMagnifyingGlass />}
           />
           <SideBarNavItem
             label='Transactions'
-            path='/account/transactions'
+            path='/transactions'
             icon={<GrTransaction />}
           />
         </ul>

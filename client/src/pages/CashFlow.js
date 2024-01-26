@@ -1,19 +1,20 @@
-import Header from '../../components/UI/Header';
-import Card from '../../components/UI/Card';
-import ExpenseSankeyDiagram from '../../components/data-visualisations/ExpenseSankeyDiagram';
-import IncomeSankeyDiagram from '../../components/data-visualisations/IncomeSankeyDiagram';
-import DropdownMenu from '../../components/DropdownMenu';
+import Header from '../components/UI/Header';
+import Card from '../components/UI/Card';
+import ExpenseSankeyDiagram from '../components/data-visualisations/ExpenseSankeyDiagram';
+import IncomeSankeyDiagram from '../components/data-visualisations/IncomeSankeyDiagram';
+import DropdownMenu from '../components/DropdownMenu';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const {
   getTransactionMonths,
   getColor,
+  getTransactionName,
   formatDate,
   formatCurrency,
   formatPercent,
   sanitizeCategory
-} = require('../../utils/helpers');
+} = require('../utils/helpers');
 
 const buildCard = (title, value, color, isPercent) => {
   return (

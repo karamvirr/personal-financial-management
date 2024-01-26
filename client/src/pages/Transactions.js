@@ -1,17 +1,17 @@
 import axios from 'axios';
 
-import Header from '../../components/UI/Header';
-import Card from '../../components/UI/Card';
-import TransactionTable from '../../components/TransactionTable';
-import DropdownMenu from '../../components/DropdownMenu';
-import SpendingDistributionPieChart from '../../components/data-visualisations/SpendingDistributionPieChart';
-import MonthlySpendingBarChart from '../../components/data-visualisations/MonthlySpendingBarChart';
+import Header from '../components/UI/Header';
+import Card from '../components/UI/Card';
+import TransactionTable from '../components/TransactionTable';
+import DropdownMenu from '../components/DropdownMenu';
+import SpendingDistributionPieChart from '../components/data-visualisations/SpendingDistributionPieChart';
+import MonthlySpendingBarChart from '../components/data-visualisations/MonthlySpendingBarChart';
 const { useState, useEffect } = require('react');
 const {
   getTransactionMonths,
   formatDate,
   isObjectEmpty
-} = require('../../utils/helpers');
+} = require('../utils/helpers');
 
 const Transactions = () => {
   // format: [{ transaction }, ...}]

@@ -2,17 +2,18 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import Header from '../../components/UI/Header';
-import Card from '../../components/UI/Card';
-import NetWorthSummary from '../../components/NetWorthSummary';
-import BalanceSummary from '../../components/BalanceSummary';
-import MonthlySpendingLineChart from '../../components/data-visualisations/MonthlySpendingLineChart';
+import Header from '../components/UI/Header';
+import Card from '../components/UI/Card';
+import NetWorthSummary from '../components/NetWorthSummary';
+import BalanceSummary from '../components/BalanceSummary';
+import MonthlySpendingLineChart from '../components/data-visualisations/MonthlySpendingLineChart';
 
 const {
-  titleize,
+  getTransactionName,
   formatCurrency,
-  sanitizeCategory
-} = require('../../utils/helpers');
+  sanitizeCategory,
+  isObjectEmpty
+} = require('../utils/helpers');
 
 const Overview = () => {
   // format: { type: { total: 0, data: [] }}
@@ -65,7 +66,6 @@ const Overview = () => {
 
   let recentTransactionData = null;
   if (transactionData) {
-    console.log(transactionData);
     const mostRecentMonth = Object.keys(transactionData).sort().pop();
     recentTransactionData = transactionData[mostRecentMonth]
       .filter(t => t.amount > 0 && !t.pending)
@@ -121,7 +121,7 @@ const Overview = () => {
                 ))}
               </div>
             )}
-            <Link to='/account/transactions'>
+            <Link to='/transactions'>
               <p
                 className='mb-2.5 cursor-pointer pl-5
                     text-sm font-semibold text-blue-600 hover:text-blue-800'>
