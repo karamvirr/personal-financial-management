@@ -29,7 +29,7 @@ const TransactionShow = ({ transaction, index }) => {
         key={`${transaction._id}-${index}`}
         onClick={onDismissHandler}>
         <td className={`whitespace-nowrap ${padding}`}>{transaction.date}</td>
-        <td className='min-w-8 max-w-8 w-8'>
+        <td className={`min-w-8 max-w-8 w-8`}>
           {transaction.logo_url && (
             <img
               className='mx-auto w-8 object-contain'
@@ -42,7 +42,16 @@ const TransactionShow = ({ transaction, index }) => {
           {getTransactionName(transaction)}
         </td>
         <td className={`whitespace-nowrap ${padding}`}>
-          {sanitizeCategory(transaction.personal_finance_category.primary)}
+          <div className='flex flex-row items-center justify-start gap-2.5'>
+            {transaction.personal_finance_category_icon_url && (
+              <img
+                className='w-8 object-contain'
+                src={transaction.personal_finance_category_icon_url}
+                alt={transaction.personal_finance_category.primary}
+              />
+            )}
+            {sanitizeCategory(transaction.personal_finance_category.primary)}
+          </div>
         </td>
         <td
           className={`whitespace-normal break-all ${padding} max-w-1/3 min-w-1/3 w-1/3`}>
