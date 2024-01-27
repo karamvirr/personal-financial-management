@@ -8,6 +8,9 @@ import CashFlow from './pages/CashFlow';
 import Transactions from './pages/Transactions';
 import Overview from './pages/Overview';
 import Root from './pages/Root';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import DataProvider from './store/DataProvider';
 
 const router = createBrowserRouter([
   {
@@ -28,7 +31,22 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <DataProvider>
+      <ToastContainer
+        position='top-right'
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      <RouterProvider router={router} />
+    </DataProvider>
+  );
 };
 
 export default App;
