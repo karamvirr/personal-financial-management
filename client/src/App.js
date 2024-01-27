@@ -13,6 +13,7 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <Root />,
+    errorElement: <Navigate to='/accounts' replace />,
     children: [
       {
         index: true,
