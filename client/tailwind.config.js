@@ -22,6 +22,12 @@ module.exports = {
       animation: {
         fill: 'fill 1s ease-in-out forwards',
         slideUp: 'slideUp 0.25s ease-out forwards'
+      },
+      maxWidth: {
+        '1/3': '33.333333%',
+      },
+      minWidth: {
+        '1/3': '33.333333%',
       }
     },
   },
