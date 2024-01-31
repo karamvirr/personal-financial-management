@@ -1,85 +1,58 @@
 import { usePlaidLink } from 'react-plaid-link';
-import axios from 'axios';
+import useAxios from '../hooks/use-axios';
 import { useEffect, useState } from 'react';
 
-// generate a temporary link token for the Link client component to use.
-const generateLinkToken = () => {
-  return axios.post('http://localhost:8080/plaid/link_token', {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-};
-
-// sends public token to server and exchanges it for a permanent access token
-// and item id.
-//
-// @param publicToken - the public token returned by the Plaid Link client
-const getAccessToken = publicToken => {
-  return axios.post(
-    'http://localhost:8080/plaid/access_token',
-    {
-      public_token: publicToken
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-  );
-};
-
-// creates an account ink record in the database with the given data.
-//
-// @param data        - the account access data which includes the access token and
-//                      item id
-// @param metadata    - the metadata object contains info about the institution the
-//                      user selected
-const createAccountRecord = (data, metadata) => {
-  return axios.post(
-    'http://localhost:8080/links',
-    {
-      name: metadata.institution.name,
-      ...data
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-  );
-};
-
+// temporary link token -> temporary public token -> permanent access token
 const LinkAccountButton = props => {
   const [linkToken, setLinkToken] = useState(null);
+
+  // generate a temporary link token for the Link client component to use.
+  const { sendRequest: generateLinkTokenRequest } = useAxios(
+    '/plaid/link_token',
+    'post'
+  );
+  // sends public token to server and exchanges it for a permanent access token
+  // and item id. (send in the public token in the body of the request).
+  const { sendRequest: getAccessTokenRequest } = useAxios(
+    '/plaid/access_token',
+    'post'
+  );
+  // creates an account link record in the database with the given data.
+  // (send in the institution name, access token, and item id in the body of the request).
+  const { sendRequest: createAccountRecordRequest } = useAxios(
+    '/links',
+    'post'
+  );
 
   const { open, ready } = usePlaidLink({
     token: linkToken,
     onSuccess: (publicToken, metadata) => {
       // swap public token for permanent access token
-      getAccessToken(publicToken)
-        .then(accessData => {
-          const { access_token, item_id } = accessData.data;
+      getAccessTokenRequest(
+        response => {
+          const { access_token, item_id } = response.data;
           // create account record in database
-          createAccountRecord({ access_token, item_id }, metadata)
-            .then(response => {
+          createAccountRecordRequest(
+            response => {
               props.onNewAccountLink(response.data);
-            })
-            .catch(error => {
-              props.onFailure(error, 'Create account error');
-            });
-        })
-        .catch(error => {
-          props.onFailure(error, 'Access token error');
-        });
+            },
+            {
+              name: metadata.institution.name,
+              access_token,
+              item_id
+            }
+          );
+        },
+        {
+          public_token: publicToken
+        }
+      );
     }
   });
 
   useEffect(() => {
-    generateLinkToken().then(response => {
+    generateLinkTokenRequest(response => {
       setLinkToken(response.data.link_token);
-    }).catch(error => {
-      props.onFailure(error, 'Link token error');
     });
   }, []);
 

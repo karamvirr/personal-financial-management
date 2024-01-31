@@ -1,4 +1,4 @@
-import axios from 'axios';
+import useAxios from '../hooks/use-axios';
 import { MdAccountBalance } from 'react-icons/md';
 import { IoMdRefresh } from 'react-icons/io';
 import { MdDelete } from 'react-icons/md';
@@ -9,56 +9,56 @@ import LinkAccountReauthentication from './LinkAccountReauthentication';
 const { formatCurrency, formatTime, pluralize } = require('../utils/helpers');
 const { useEffect, useState } = require('react');
 
-const AccountLink = ({ data, onUpdate, onFailure }) => {
+const AccountLink = ({ data, onUpdate }) => {
   const [isLoading, setIsLoading] = useState(
     !data.balance.updated_at || !data.transactions.updated_at
   );
   const [error, setError] = useState(null);
 
+  const { sendRequest: sendDeleteRequest } = useAxios(
+    '/links/' + data._id,
+    'delete'
+  );
+
+  const { sendRequest: fetchBalanceDataRequest } = useAxios(
+    `/links/${data._id}/balance`,
+    'put'
+  );
+
+  const { sendRequest: fetchTransactionsDataRequest } = useAxios(
+    `/links/${data._id}/transactions`,
+    'put'
+  );
+
   const errorHandler = error => {
     setError(error);
     setIsLoading(false);
-    onFailure(error, data.name);
   };
 
   const fetchBalanceData = async () => {
-    try {
-      const response = await axios.put(
-        'http://localhost:8080/links/' + data._id + '/balance',
-        {},
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      onUpdate({
-        method: 'update',
-        record: response.data
-      });
-    } catch (error) {
-      errorHandler(error);
-    }
+    await fetchBalanceDataRequest(
+      response => {
+        onUpdate({
+          method: 'update',
+          record: response.data
+        });
+      },
+      {},
+      errorHandler
+    );
   };
 
   const fetchTransactionsData = async () => {
-    try {
-      const response = await axios.put(
-        'http://localhost:8080/links/' + data._id + '/transactions',
-        {},
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      onUpdate({
-        method: 'update',
-        record: response.data
-      });
-    } catch (error) {
-      errorHandler(error);
-    }
+    await fetchTransactionsDataRequest(
+      response => {
+        onUpdate({
+          method: 'update',
+          record: response.data
+        });
+      },
+      {},
+      errorHandler
+    );
   };
 
   const refreshAccountLinkHandler = async () => {
@@ -69,7 +69,7 @@ const AccountLink = ({ data, onUpdate, onFailure }) => {
 
   const deleteAccountLinkHandler = () => {
     if (window.confirm('Are you sure you want to delete this account?')) {
-      axios.delete('http://localhost:8080/links/' + data._id).then(() => {
+      sendDeleteRequest(() => {
         onUpdate({
           method: 'delete',
           record: data
@@ -126,7 +126,6 @@ const AccountLink = ({ data, onUpdate, onFailure }) => {
                   setError(null);
                   setIsLoading(true);
                 }}
-                onFailure={onFailure}
               />
             ) : (
               <div>

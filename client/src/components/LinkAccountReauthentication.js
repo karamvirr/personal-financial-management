@@ -1,24 +1,15 @@
 import { MdErrorOutline } from 'react-icons/md';
 import { usePlaidLink } from 'react-plaid-link';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-
-const generateLinkToken = accessToken => {
-  return axios.post(
-    'http://localhost:8080/plaid/reauthentication_link_token',
-    {
-      access_token: accessToken
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-  );
-};
+import useAxios from '../hooks/use-axios';
 
 const LinkAccountReauthentication = props => {
   const [linkToken, setLinkToken] = useState(null);
+  const { sendRequest } = useAxios(
+    '/plaid/reauthentication_link_token',
+    'post'
+  );
+
   const { open, ready } = usePlaidLink({
     token: linkToken,
     onSuccess: (publicToken, metadata) => {
@@ -26,19 +17,18 @@ const LinkAccountReauthentication = props => {
       // do anything here other than report success.
       props.onSuccess();
     },
-    onExit: (error, metadata) => {
-      props.onFailure(error, metadata);
-    }
+    onExit: (error, metadata) => {}
   });
 
   useState(() => {
-    generateLinkToken(props.accessToken)
-      .then(response => {
+    sendRequest(
+      response => {
         setLinkToken(response.data.link_token);
-      })
-      .catch(error => {
-        props.onFailure(error, 'Reauthentication link token error');
-      });
+      },
+      {
+        access_token: props.accessToken
+      }
+    );
   }, []);
 
   return (

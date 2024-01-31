@@ -4,7 +4,7 @@ import ExpenseSankeyDiagram from '../components/data-visualisations/ExpenseSanke
 import IncomeSankeyDiagram from '../components/data-visualisations/IncomeSankeyDiagram';
 import DropdownMenu from '../components/DropdownMenu';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import useAxios from '../hooks/use-axios';
 
 const {
   getTransactionMonths,
@@ -32,18 +32,13 @@ const buildCard = (title, value, color, isPercent) => {
 const CashFlow = () => {
   const [transactionData, setTransactionData] = useState(null);
   const [filteredTransactionData, setFilteredTransactionData] = useState(null);
+  const { sendRequest } = useAxios('/links', 'get');
 
   useEffect(() => {
-    axios
-      .get('http://localhost:8080/links', {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(response => {
-        const data = response.data;
-        setTransactionData(data.flatMap(link => link.transactions.data));
-      });
+    sendRequest(response => {
+      const data = response.data;
+      setTransactionData(data.flatMap(link => link.transactions.data));
+    });
   }, []);
 
   const onDropdownSelectHandler = month => {
@@ -71,10 +66,10 @@ const CashFlow = () => {
     incomeData = [['From', 'To', 'Amount']];
 
     filteredTransactionData.forEach(transaction => {
-      const name = transaction.name;
+      const name = getTransactionName(transaction);
       let amount = transaction.amount;
 
-      if (!name.startsWith('Transfer From') && !name.includes('Pending')) {
+      if (!name.startsWith('Transfer From') && !transaction.pending) {
         if (amount > 0) {
           // expenses
           const category = sanitizeCategory(
@@ -109,20 +104,16 @@ const CashFlow = () => {
           <>
             <DropdownMenu
               items={getTransactionMonths(transactionData)}
-              label='Select a month'
+              label='Filter by month'
               onSelect={onDropdownSelectHandler}
               className='mb-5'
+              excludeAllOption={true}
             />
             <div className='mb-5 grid grid-cols-4 gap-5'>
               {buildCard('Income', income, getColor(income))}
               {buildCard('Expenses', expenses, getColor(-expenses))}
               {buildCard('Total Savings', totalSavings, getColor(totalSavings))}
-              {buildCard(
-                'Savings Rate',
-                savingsRate,
-                getColor(savingsRate),
-                true
-              )}
+              {buildCard('Savings Rate', savingsRate, 'text-black', true)}
             </div>
             {expenseData && (
               <Card className='mb-5'>

@@ -1,8 +1,7 @@
-import axios from 'axios';
+import useAxios from '../hooks/use-axios';
 import Modal from './UI/Modal';
 import { useState } from 'react';
 import {
-  getTransactionName,
   sanitizeCategory,
   formatTransactionDate,
   formatCurrency,
@@ -22,23 +21,19 @@ const buildTableRow = (label, value) => {
 const TransactionEdit = ({ transaction, onDismiss, onUpdate }) => {
   const [note, setNote] = useState(transaction.note);
 
+  const { sendRequest } = useAxios(
+    `/links/${transaction.link_id}/transactions/${transaction._id}`,
+    'put'
+  );
+
   const editTransactionHandler = () => {
-    axios
-      .put(
-        `http://localhost:8080/links/${transaction.link_id}/transactions/${transaction._id}`,
-        {
-          note: note
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      )
-      .then(() => {
+    sendRequest(
+      () => {
         onDismiss();
         onUpdate(note);
-      });
+      },
+      { note: note }
+    );
   };
 
   return (

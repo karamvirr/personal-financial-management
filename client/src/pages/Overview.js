@@ -1,4 +1,4 @@
-import axios from 'axios';
+import useAxios from '../hooks/use-axios';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -12,7 +12,8 @@ const {
   getTransactionName,
   formatCurrency,
   sanitizeCategory,
-  isObjectEmpty
+  isObjectEmpty,
+  randomId
 } = require('../utils/helpers');
 
 const Overview = () => {
@@ -20,52 +21,47 @@ const Overview = () => {
   const [balanceData, setBalanceData] = useState(null);
   // format: { 'YYYY-MM': [] }
   const [transactionData, setTransactionData] = useState(null);
+  const { sendRequest } = useAxios('/links', 'get');
 
   useEffect(() => {
-    axios
-      .get('http://localhost:8080/links', {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(response => {
-        const data = response.data;
+    sendRequest(response => {
+      const data = response.data;
 
-        // balances categorized by type (deposit, loan, credit, etc.)
-        // ex. { depository: { total: 0, data: [] }, credit: { total: 0, data: [] }}
-        const parsedBalanceData = {};
-        // transactions categorized by month & year ('YYYY-MM')
-        const parsedTransactionData = {};
+      // balances categorized by type (deposit, loan, credit, etc.)
+      // ex. { depository: { total: 0, data: [] }, credit: { total: 0, data: [] }}
+      const parsedBalanceData = {};
+      // transactions categorized by month & year ('YYYY-MM')
+      const parsedTransactionData = {};
 
-        data.forEach(link => {
-          link.balance.accounts.forEach(account => {
-            const type = account.type;
-            const value = account.balances.current;
+      data.forEach(link => {
+        link.balance.accounts.forEach(account => {
+          const type = account.type;
+          const value = account.balances.current;
 
-            if (!parsedBalanceData[type]) {
-              parsedBalanceData[type] = { total: 0, data: [] };
-            }
-            parsedBalanceData[type].data.push(account);
-            parsedBalanceData[type].total += value;
-          });
-
-          link.transactions.data.forEach(transaction => {
-            // format: 'YYYY-MM'
-            const yearMonth = transaction.date.split('-').slice(0, 2).join('-');
-            if (!parsedTransactionData[yearMonth]) {
-              parsedTransactionData[yearMonth] = [];
-            }
-            parsedTransactionData[yearMonth].push(transaction);
-          });
+          if (!parsedBalanceData[type]) {
+            parsedBalanceData[type] = { total: 0, data: [] };
+          }
+          parsedBalanceData[type].data.push(account);
+          parsedBalanceData[type].total += value;
         });
 
-        setBalanceData(parsedBalanceData);
-        setTransactionData(parsedTransactionData);
+        link.transactions.data.forEach(transaction => {
+          // format: 'YYYY-MM'
+          const yearMonth = transaction.date.split('-').slice(0, 2).join('-');
+          if (!parsedTransactionData[yearMonth]) {
+            parsedTransactionData[yearMonth] = [];
+          }
+          parsedTransactionData[yearMonth].push(transaction);
+        });
       });
+
+      setBalanceData(parsedBalanceData);
+      setTransactionData(parsedTransactionData);
+    });
   }, []);
 
   let recentTransactionData = null;
-  if (transactionData) {
+  if (transactionData && !isObjectEmpty(transactionData)) {
     const mostRecentMonth = Object.keys(transactionData).sort().pop();
     recentTransactionData = transactionData[mostRecentMonth]
       .filter(t => t.amount > 0 && !t.pending)
@@ -101,13 +97,11 @@ const Overview = () => {
             {recentTransactionData && (
               <div className='my-5'>
                 {recentTransactionData.map(transaction => (
-                  <div className='border-t px-5 py-2.5 last:border-b'>
+                  <div
+                    className='border-t px-5 py-2.5 last:border-b'
+                    key={randomId()}>
                     <div className='grid grid-cols-3 text-sm text-gray-600'>
-                      <p>
-                        {titleize(
-                          transaction.merchant_name || transaction.name
-                        )}
-                      </p>
+                      <p>{getTransactionName(transaction)}</p>
                       <p>
                         {sanitizeCategory(
                           transaction.personal_finance_category.primary

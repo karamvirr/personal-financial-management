@@ -1,5 +1,4 @@
-import axios from 'axios';
-
+import useAxios from '../hooks/use-axios';
 import Header from '../components/UI/Header';
 import Card from '../components/UI/Card';
 import TransactionTable from '../components/TransactionTable';
@@ -21,46 +20,42 @@ const Transactions = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOption, setSelectedOption] = useState(null);
 
+  const { sendRequest } = useAxios('/links', 'get');
+
   useEffect(() => {
-    axios
-      .get('http://localhost:8080/links', {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(response => {
-        const parsedTransactionData = response.data
-          .flatMap(link => {
-            return link.transactions.data.map(transaction => {
-              return {
-                ...transaction,
-                link_id: link._id
-              };
-            });
-          })
-          // sorts in descending order by transaction date
-          .sort((a, b) => {
-            return new Date(b.date).getTime() - new Date(a.date).getTime();
+    sendRequest(response => {
+      const parsedTransactionData = response.data
+        .flatMap(link => {
+          return link.transactions.data.map(transaction => {
+            return {
+              ...transaction,
+              link_id: link._id
+            };
           });
-
-        const parsedMapData = {};
-        parsedTransactionData.forEach(transaction => {
-          // format: 'YYYY-MM-DD'
-          const date = transaction.date;
-          // format: 'YYYY-MM'
-          const yearMonth = date.split('-').slice(0, 2).join('-');
-          // format: 'MMMM YYYY'
-          const key = formatDate(yearMonth);
-
-          if (!parsedMapData[key]) {
-            parsedMapData[key] = [];
-          }
-          parsedMapData[key].push(transaction);
+        })
+        // sorts in descending order by transaction date
+        .sort((a, b) => {
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
         });
 
-        setTransactionData(parsedTransactionData);
-        setTransactionDataMap(parsedMapData);
+      const parsedMapData = {};
+      parsedTransactionData.forEach(transaction => {
+        // format: 'YYYY-MM-DD'
+        const date = transaction.date;
+        // format: 'YYYY-MM'
+        const yearMonth = date.split('-').slice(0, 2).join('-');
+        // format: 'MMMM YYYY'
+        const key = formatDate(yearMonth);
+
+        if (!parsedMapData[key]) {
+          parsedMapData[key] = [];
+        }
+        parsedMapData[key].push(transaction);
       });
+
+      setTransactionData(parsedTransactionData);
+      setTransactionDataMap(parsedMapData);
+    });
   }, []);
 
   const onDropdownSelectHandler = month => {
@@ -117,7 +112,7 @@ const Transactions = () => {
         <h1 className='text-lg font-bold'>Transactions</h1>
       </Header>
       <section className='mx-auto my-5 w-11/12'>
-        {transactionData && !isObjectEmpty(transactionDataMap) && (
+        {transactionData && transactionDataMap && (
           <DropdownMenu
             className='mb-5'
             label='Filter by month'
