@@ -73,9 +73,7 @@ const Overview = () => {
 
   return (
     <>
-      <Header>
-        <h1 className='text-lg font-bold'>Overview</h1>
-      </Header>
+      <Header title='Overview' />
       <section className='mx-auto my-5 w-11/12'>
         {balanceData && <NetWorthSummary data={balanceData} />}
         <div className='mb-5 flex justify-between'>

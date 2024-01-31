@@ -40,9 +40,7 @@ const Accounts = () => {
 
   return (
     <>
-      <Header>
-        <h1 className='text-lg font-bold'>Accounts</h1>
-      </Header>
+      <Header title='Accounts' />
       <section className='m-5'>
         {accountLinks && (
           <ul>

@@ -96,9 +96,7 @@ const CashFlow = () => {
 
   return (
     <>
-      <Header>
-        <h1 className='text-lg font-bold'>Cash Flow</h1>
-      </Header>
+      <Header title='Cash Flow' />
       <section className='mx-auto my-5 w-11/12'>
         {transactionData && (
           <>

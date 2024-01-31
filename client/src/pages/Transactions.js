@@ -108,9 +108,7 @@ const Transactions = () => {
 
   return (
     <>
-      <Header>
-        <h1 className='text-lg font-bold'>Transactions</h1>
-      </Header>
+      <Header title='Transactions' />
       <section className='mx-auto my-5 w-11/12'>
         {transactionData && transactionDataMap && (
           <DropdownMenu
