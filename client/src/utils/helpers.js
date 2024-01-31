@@ -1,11 +1,31 @@
+// @param value: string to be checked if it is a number
+// @return boolean: true if the value is a number, false otherwise
+const isANumber = value => {
+  const regex = /^[-+]?\d+(\.\d+)?$/;
+
+  return regex.test(value);
+};
+
+// @param value: number to be formatted as currency
+// @return string in currency format (USD)
 const formatCurrency = value => {
-  return value.toLocaleString('en-US', {
+  if (!isANumber(value)) {
+    return null;
+  }
+
+  return (+value).toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD'
   });
 };
 
+// @param value: number to be formatted as a percentage
+// @return string in percentage format
 const formatPercent = value => {
+  if (!isANumber(value)) {
+    return null;
+  }
+
   return value.toLocaleString('en-US', {
     style: 'percent',
     minimumFractionDigits: 2,
@@ -18,6 +38,10 @@ const formatPercent = value => {
 //
 // @return string in MMMM YYYY format
 const formatDate = dateStr => {
+  if (!dateStr || dateStr.split('-').length !== 2) {
+    return null;
+  }
+
   const split = dateStr.split('-');
   const monthInt = +split[1];
   const year = split[0];
@@ -30,6 +54,10 @@ const formatDate = dateStr => {
 // @param date: string in format YYYY-MM-DD
 // @return string in format DDDD, MMMM DD, YYYY
 const formatTransactionDate = date => {
+  if (!date || date.split('-').length !== 3) {
+    return null;
+  }
+
   const split = date.split('-');
   const monthInt = +split[1];
   const year = +split[0];
@@ -42,8 +70,12 @@ const formatTransactionDate = date => {
   return `${dayOfWeek}, ${month} ${day}, ${year}`;
 };
 
-// MM/DD/YYYY HH:MM:SS format (12 hour clock)
+// @param timestamp: number in milliseconds since epoch
+// @return string in MM/DD/YYYY HH:MM AM/PM format (12 hour clock)
 const formatTime = timestamp => {
+  if (!isANumber(timestamp)) {
+    return null;
+  }
   const date = new Date(timestamp);
   const hours = date.getHours();
   let minutes = date.getMinutes();
@@ -58,10 +90,18 @@ const formatTime = timestamp => {
   return `${month}/${day}/${year} ${hour}:${minutes} ${ampm}`;
 };
 
+// @param string: string to be pluralized
+// @param count: number to determine if the string should be pluralized
+// @return string in pluralized format
 const pluralize = (string, count) => {
   return count === 1 ? string : string + 's';
 };
 
+// Generates a random string of the given length.
+// If no length is provided, the default length is 8.
+//
+// @param length: length of the random string
+// @return string in random format
 const randomId = (length = 8) => {
   return Math.random()
     .toString(36)
@@ -94,6 +134,9 @@ const humanize = string => {
     .join(' ');
 };
 
+// @param transactionData: list of transaction objects.
+// @return list of unique months in the transaction data in MMMM YYYY format.
+//         the result is sorted in descending order.
 const getTransactionMonths = transactionData => {
   if (!transactionData) {
     return [];
@@ -104,6 +147,8 @@ const getTransactionMonths = transactionData => {
     // format: YYYY-MM
     const parsedMonth = date.split('-').slice(0, 2).join('-');
     const month = formatDate(parsedMonth);
+
+    // format: MMMM YYYY
     months.add(month);
   });
   return Array.from(months).sort((a, b) => {
@@ -111,15 +156,24 @@ const getTransactionMonths = transactionData => {
   });
 };
 
+// @param transactions: list of transaction objects
+// @return list of unique transaction categories, sorted alphabetically
 const getTransactionCategories = transactions => {
   const categoriesSet = new Set([]);
-  transactions.map(transaction => {
-    categoriesSet.add(humanize(transaction.personal_finance_category.primary));
-  });
+
+  if (transactions) {
+    transactions.map(transaction => {
+      categoriesSet.add(
+        humanize(transaction.personal_finance_category.primary)
+      );
+    });
+  }
 
   return Array.from(categoriesSet).sort();
 };
 
+// @param value: number to determine the color
+// @return string: tailwind css color class based on the value provided
 const getColor = value => {
   if (value < 0) {
     return 'text-rose-500';
@@ -130,10 +184,17 @@ const getColor = value => {
   return '';
 };
 
+// @param transaction: transaction object
+// @return string: transaction name or merchant name if available
 const getTransactionName = transaction => {
+  if (!transaction) {
+    return '';
+  }
   return humanize(transaction.merchant_name || transaction.name);
 };
 
+// @param obj: object to be checked if it is empty
+// @return boolean: true if the object is empty, false otherwise
 const isObjectEmpty = obj => {
   return Object.keys(obj).length === 0;
 };
