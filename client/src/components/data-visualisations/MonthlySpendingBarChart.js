@@ -1,7 +1,7 @@
 import { Chart } from 'react-google-charts';
 import React from 'react';
 const {
-  sanitizeCategory,
+  humanize,
   formatCurrency,
   getTransactionCategories
 } = require('../../utils/helpers');
@@ -22,7 +22,7 @@ const getBarChartData = (transactionData, option) => {
       });
       transactions.forEach(transaction => {
         const amount = transaction.amount;
-        const category = sanitizeCategory(
+        const category = humanize(
           transaction.personal_finance_category.primary
         );
         if (

@@ -2,10 +2,9 @@ import useAxios from '../hooks/use-axios';
 import Modal from './UI/Modal';
 import { useState } from 'react';
 import {
-  sanitizeCategory,
+  humanize,
   formatTransactionDate,
-  formatCurrency,
-  titleize
+  formatCurrency
 } from '../utils/helpers';
 import { MdOutlineCalendarMonth } from 'react-icons/md';
 
@@ -48,12 +47,12 @@ const TransactionEdit = ({ transaction, onDismiss, onUpdate }) => {
 
         <table className='mb-5 w-fit border-separate'>
           <tbody>
-            {buildTableRow('Name:', titleize(transaction.name))}
+            {buildTableRow('Name:', humanize(transaction.name))}
             {transaction.merchant_name &&
               transaction.merchant_name !== transaction.name &&
               buildTableRow(
                 'Merchant Name:',
-                titleize(transaction.merchant_name)
+                humanize(transaction.merchant_name)
               )}
             {transaction.merchan}
             {buildTableRow(
@@ -63,12 +62,12 @@ const TransactionEdit = ({ transaction, onDismiss, onUpdate }) => {
             {transaction.personal_finance_category.primary &&
               buildTableRow(
                 'Category:',
-                sanitizeCategory(transaction.personal_finance_category.primary)
+                humanize(transaction.personal_finance_category.primary)
               )}
             {transaction.payment_channel &&
               buildTableRow(
                 'Payment Channel:',
-                titleize(transaction.payment_channel)
+                humanize(transaction.payment_channel)
               )}
           </tbody>
         </table>

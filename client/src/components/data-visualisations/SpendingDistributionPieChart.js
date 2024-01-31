@@ -1,6 +1,6 @@
 import { Chart } from 'react-google-charts';
 import React from 'react';
-const { sanitizeCategory } = require('../../utils/helpers');
+const { humanize } = require('../../utils/helpers');
 
 // transactionData format: { 'MMMM YYYY': [{transaction}, ...}]}
 const SpendingDistributionPieChart = React.memo(
@@ -20,9 +20,7 @@ const SpendingDistributionPieChart = React.memo(
     const categorySpendingData = {};
     transactions.forEach(transaction => {
       const amount = transaction.amount;
-      const category = sanitizeCategory(
-        transaction.personal_finance_category.primary
-      );
+      const category = humanize(transaction.personal_finance_category.primary);
 
       if (
         amount > 0 &&

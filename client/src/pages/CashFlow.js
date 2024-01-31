@@ -13,7 +13,7 @@ const {
   formatDate,
   formatCurrency,
   formatPercent,
-  sanitizeCategory
+  humanize
 } = require('../utils/helpers');
 
 const buildCard = (title, value, color, isPercent) => {
@@ -72,7 +72,7 @@ const CashFlow = () => {
       if (!name.startsWith('Transfer From') && !transaction.pending) {
         if (amount > 0) {
           // expenses
-          const category = sanitizeCategory(
+          const category = humanize(
             transaction.personal_finance_category.primary
           );
           expenses += amount;

@@ -7,7 +7,7 @@ import { GiReceiveMoney } from 'react-icons/gi';
 import { PiDotsThreeCircleLight } from 'react-icons/pi';
 
 const {
-  titleize,
+  humanize,
   formatCurrency,
   randomId,
   pluralize
@@ -45,7 +45,7 @@ const BalanceSummary = ({ type, accounts }) => {
           px-5 py-2.5 shadow-sm'>
         <div className='flex flex-row items-center gap-2.5'>
           {getIcon(type)}
-          <p className='font-semibold'>{titleize(type)}</p>
+          <p className='font-semibold'>{humanize(type)}</p>
         </div>
         <p className='font-semibold'>{formatCurrency(accounts.total)}</p>
       </div>

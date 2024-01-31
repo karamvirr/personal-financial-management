@@ -3,7 +3,7 @@ import TransactionEdit from './TransactionEdit';
 
 const {
   formatCurrency,
-  sanitizeCategory,
+  humanize,
   getTransactionName
 } = require('../utils/helpers');
 
@@ -50,7 +50,7 @@ const TransactionShow = ({ transaction, index }) => {
                 alt={transaction.personal_finance_category.primary}
               />
             )}
-            {sanitizeCategory(transaction.personal_finance_category.primary)}
+            {humanize(transaction.personal_finance_category.primary)}
           </div>
         </td>
         <td

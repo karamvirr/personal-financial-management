@@ -11,7 +11,7 @@ import MonthlySpendingLineChart from '../components/data-visualisations/MonthlyS
 const {
   getTransactionName,
   formatCurrency,
-  sanitizeCategory,
+  humanize,
   isObjectEmpty,
   randomId
 } = require('../utils/helpers');
@@ -101,7 +101,7 @@ const Overview = () => {
                     <div className='grid grid-cols-3 text-sm text-gray-600'>
                       <p>{getTransactionName(transaction)}</p>
                       <p>
-                        {sanitizeCategory(
+                        {humanize(
                           transaction.personal_finance_category.primary
                         )}
                       </p>

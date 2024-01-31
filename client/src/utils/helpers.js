@@ -27,6 +27,21 @@ const formatDate = dateStr => {
   return `${month} ${year}`;
 };
 
+// @param date: string in format YYYY-MM-DD
+// @return string in format DDDD, MMMM DD, YYYY
+const formatTransactionDate = date => {
+  const split = date.split('-');
+  const monthInt = +split[1];
+  const year = +split[0];
+  const day = +split[2];
+
+  const dateObj = new Date(year, monthInt - 1, day);
+  const dayOfWeek = dateObj.toLocaleString('default', { weekday: 'long' });
+  const month = dateObj.toLocaleString('default', { month: 'long' });
+
+  return `${dayOfWeek}, ${month} ${day}, ${year}`;
+};
+
 // MM/DD/YYYY HH:MM:SS format (12 hour clock)
 const formatTime = timestamp => {
   const date = new Date(timestamp);
@@ -43,18 +58,6 @@ const formatTime = timestamp => {
   return `${month}/${day}/${year} ${hour}:${minutes} ${ampm}`;
 };
 
-const titleize = string => {
-  return string
-    .split(' ')
-    .map(word => {
-      if (word === 'and') {
-        return word;
-      }
-      return word[0].toUpperCase() + word.slice(1);
-    })
-    .join(' ');
-};
-
 const pluralize = (string, count) => {
   return count === 1 ? string : string + 's';
 };
@@ -65,8 +68,30 @@ const randomId = (length = 8) => {
     .slice(2, length + 2);
 };
 
-const sanitizeCategory = category => {
-  return titleize(category.trim().replaceAll('_', ' ').toLowerCase());
+// Capitalizes the first letter of each word in the string,
+// replaces underscores with spaces, strips leading or trailing
+// whitespaces, and lowercases the rest of the string.
+// Used to generate more human-readable strings.
+//
+// @param string: string to be humanized
+// @return string in humanized format
+const humanize = string => {
+  if (!string) {
+    return '';
+  }
+
+  return string
+    .replaceAll('_', ' ')
+    .toLowerCase()
+    .trim()
+    .split(' ')
+    .map(word => {
+      if (word === 'and') {
+        return word;
+      }
+      return word[0].toUpperCase() + word.slice(1);
+    })
+    .join(' ');
 };
 
 const getTransactionMonths = transactionData => {
@@ -89,9 +114,7 @@ const getTransactionMonths = transactionData => {
 const getTransactionCategories = transactions => {
   const categoriesSet = new Set([]);
   transactions.map(transaction => {
-    categoriesSet.add(
-      sanitizeCategory(transaction.personal_finance_category.primary)
-    );
+    categoriesSet.add(humanize(transaction.personal_finance_category.primary));
   });
 
   return Array.from(categoriesSet).sort();
@@ -108,7 +131,7 @@ const getColor = value => {
 };
 
 const getTransactionName = transaction => {
-  return titleize(transaction.merchant_name || transaction.name);
+  return humanize(transaction.merchant_name || transaction.name);
 };
 
 const isObjectEmpty = obj => {
@@ -119,14 +142,14 @@ module.exports = {
   formatCurrency,
   formatPercent,
   formatDate,
+  formatTransactionDate,
   formatTime,
-  titleize,
   pluralize,
   isObjectEmpty,
   getTransactionName,
   randomId,
   getTransactionCategories,
-  sanitizeCategory,
   getTransactionMonths,
+  humanize,
   getColor
 };
