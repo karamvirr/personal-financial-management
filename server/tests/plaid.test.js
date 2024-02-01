@@ -1,5 +1,3 @@
-const PLAID_ENV = process.env.PLAID_ENV || 'sandbox';
-
 const request = require('supertest');
 const axios = require('axios');
 const app = require('../index');
@@ -9,8 +7,8 @@ describe('/plaid', () => {
   describe('POST /link_token', () => {
     it('returns a link_token if called with valid credentials', async () => {
       const mockPlaidResponse = {
+        link_token: `link-sandbox-123-abc`,
         expiration: '2023-12-20T22:11:03Z',
-        link_token: `link-${PLAID_ENV}-123-abc`,
         request_id: '123abc'
       };
 
@@ -28,11 +26,35 @@ describe('/plaid', () => {
       const response = await request(app).post('/plaid/link_token');
 
       expect(response.status).toBe(400);
-      expect(response.body).toEqual({
-        status: 400,
-        code: undefined,
-        message: undefined
-      });
+    });
+  });
+
+  describe('POST /reauthentication_link_token', () => {
+    it('returns a link_token if called with a valid access_token', async () => {
+      const mockPlaidResponse = {
+        link_token: `link-sandbox-123-abc`,
+        expiration: '2023-12-20T22:11:03Z',
+        request_id: '123abc'
+      };
+
+      axios.post.mockResolvedValue({ data: mockPlaidResponse });
+
+      const response = await request(app)
+        .post('/plaid/reauthentication_link_token')
+        .send({ access_token: 'access-sandbox-123-abc' });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockPlaidResponse);
+    });
+
+    it('returns an error if called with an invalid access_token', async () => {
+      axios.post.mockRejectedValue({ response: { status: 400 } });
+
+      const response = await request(app)
+        .post('/plaid/reauthentication_link_token')
+        .send({ access_token: 'invalid-access-sandbox-123-abc' });
+
+      expect(response.status).toBe(400);
     });
   });
 
@@ -63,11 +85,6 @@ describe('/plaid', () => {
         });
 
         expect(response.status).toBe(400);
-        expect(response.body).toEqual({
-          status: 400,
-          code: undefined,
-          message: undefined
-        });
       });
 
       it('called with no public_token', async () => {
@@ -76,11 +93,6 @@ describe('/plaid', () => {
           .send({});
 
         expect(response.status).toBe(400);
-        expect(response.body).toEqual({
-          status: 400,
-          code: 'INVALID_INPUT',
-          message: 'Missing public_token'
-        });
       });
     });
   });

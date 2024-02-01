@@ -9,6 +9,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.NODE_ENV === 'test' ? 0 : process.env.PORT || 8080;
+// set DEMO_MODE to false if in test environment
+process.env.DEMO_MODE =
+  process.env.NODE_ENV === 'test' ? 'false' : process.env.DEMO_MODE;
+console.log('Demo mode enabled:', process.env.DEMO_MODE);
 
 // connect to MongoDB database
 require('./db')();

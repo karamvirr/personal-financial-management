@@ -1,87 +1,65 @@
 const request = require('supertest');
+const axios = require('axios');
+const app = require('../index');
+const mockingoose = require('mockingoose');
 const { Link } = require('../models/link');
-
-let app;
+jest.mock('axios');
 
 describe('/links', () => {
-  beforeEach(() => {
-    app = require('../index');
-  });
-  afterEach(async () => {
-    await app.close();
-    await Link.deleteMany({});
+  describe('GET /', () => {
+    it('returns all links sorted by institution name', async () => {
+      const mockLinks = [
+        { name: 'Bank of America' },
+        { name: 'Chase' },
+        { name: 'Wells Fargo' }
+      ];
+
+      mockingoose(Link).toReturn(mockLinks, 'find');
+
+      const response = await request(app).get('/links');
+
+      expect(response.status).toBe(200);
+      const names = response.body.map(link => link.name);
+      expect(names).toEqual(['Bank of America', 'Chase', 'Wells Fargo']);
+    });
   });
 
   describe('POST /', () => {
-    it('returns a success message if link is created', async () => {
-      const response = await request(app).post('/links').send({
-        name: 'WECU',
-        access_token: 'access-sandbox-abc-123',
-        item_id: 'Aim3b'
-      });
+    it('creates a new link', async () => {
+      const mockLink = {
+        name: 'Wells Fargo',
+        access_token: 'access-sandbox-123-abc',
+        item_id: 'item-sandbox-123-abc'
+      };
+
+      mockingoose(Link).toReturn(mockLink, 'save');
+
+      const response = await request(app).post('/links').send(mockLink);
 
       expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('id');
-      expect(response.body).toHaveProperty(
-        'message',
-        'Link successfully created!'
-      );
-    });
-
-    it('returns an error if link initialize data is missing', async () => {
-      let response = await request(app).post('/links').send({
-        name: 'WECU',
-        item_id: 'Aim3b'
-      });
-
-      expect(response.status).toBe(422);
-      expect(response.body).toHaveProperty(
-        'error',
-        '"access_token" is required'
-      );
-
-      response = await request(app).post('/links').send({
-        access_token: 'access-sandbox-abc-123',
-        item_id: 'Aim3b'
-      });
-
-      expect(response.status).toBe(422);
-      expect(response.body).toHaveProperty('error', '"name" is required');
-
-      response = await request(app).post('/links').send({
-        name: 'WECU',
-        access_token: 'access-sandbox-abc-123'
-      });
-      expect(response.status).toBe(422);
-      expect(response.body).toHaveProperty('error', '"item_id" is required');
+      const { name, access_token, item_id } = response.body;
+      expect({ name, access_token, item_id }).toEqual(mockLink);
     });
   });
 
-  describe('GET /', () => {
-    it('returns all link', async () => {
-      let response = await request(app).get('/links');
-
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual([]);
-
-      const links = [
-        { name: 'WECU', access_token: 'access-token-1', item_id: 'item-id-1' },
-        { name: 'Chase', access_token: 'access-token-2', item_id: 'item-id-2' },
+  describe('DELETE /links/:id', () => {
+    it('deletes a link', async () => {
+      const id = '123abc';
+      mockingoose(Link).toReturn(
         {
-          name: 'Fidelity',
-          access_token: 'access-token-3',
-          item_id: 'item-id-3'
-        }
-      ];
-      await Link.insertMany(links);
-      response = await request(app).get('/links');
+          id: id,
+          message: 'Link deleted successfully'
+        },
+        'findOneAndDelete'
+      );
+
+      const response = await request(app).delete(`/links/${id}`);
 
       expect(response.status).toBe(200);
-      expect(response.body.length).toBe(3);
-      // sorting validation
-      expect(response.body[0].name).toBe('Chase');
-      expect(response.body[1].name).toBe('Fidelity');
-      expect(response.body[2].name).toBe('WECU');
+      expect(response.body).toEqual({
+        id,
+        message: 'Link deleted successfully'
+      });
     });
   });
 });

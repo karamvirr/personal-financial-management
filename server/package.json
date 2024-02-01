@@ -18,6 +18,7 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
+    "mockingoose": "^2.16.2",
     "supertest": "^6.3.3"
   }
 }
