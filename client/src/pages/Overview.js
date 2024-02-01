@@ -13,7 +13,7 @@ const {
   formatCurrency,
   humanize,
   isObjectEmpty,
-  randomId
+  getRandomId
 } = require('../utils/helpers');
 
 const Overview = () => {

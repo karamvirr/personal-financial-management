@@ -9,7 +9,7 @@ import { PiDotsThreeCircleLight } from 'react-icons/pi';
 const {
   humanize,
   formatCurrency,
-  randomId,
+  getRandomId,
   pluralize
 } = require('../utils/helpers');
 
@@ -52,7 +52,7 @@ const BalanceSummary = ({ type, accounts }) => {
       <div className='px-5'>
         {accounts.data.map(balance => (
           <div
-            key={randomId()}
+            key={getRandomId()}
             className='my-2.5 flex items-start justify-between'>
             <div>
               <p>{balance.name}</p>

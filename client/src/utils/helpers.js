@@ -102,7 +102,7 @@ const pluralize = (string, count) => {
 //
 // @param length: length of the random string
 // @return string in random format
-const randomId = (length = 8) => {
+const getRandomId = (length = 8) => {
   return Math.random()
     .toString(36)
     .slice(2, length + 2);
@@ -208,7 +208,7 @@ module.exports = {
   pluralize,
   isObjectEmpty,
   getTransactionName,
-  randomId,
+  getRandomId,
   getTransactionCategories,
   getTransactionMonths,
   humanize,

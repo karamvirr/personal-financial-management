@@ -5,7 +5,7 @@ const {
   formatTransactionDate,
   formatTime,
   pluralize,
-  randomId,
+  getRandomId,
   humanize,
   getTransactionMonths,
   getTransactionCategories,
@@ -118,15 +118,15 @@ describe('pluralize', () => {
   });
 });
 
-describe('randomId', () => {
+describe('getRandomId', () => {
   it('returns a random string of length 8', () => {
-    const id = randomId();
+    const id = getRandomId();
     expect(typeof id).toBe('string');
     expect(id.length).toBe(8);
   });
 
   it('returns a random string of specified length', () => {
-    const id = randomId(4);
+    const id = getRandomId(4);
     expect(typeof id).toBe('string');
     expect(id.length).toBe(4);
   });
