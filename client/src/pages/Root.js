@@ -5,7 +5,7 @@ const Root = () => {
   return (
     <div className='flex h-screen flex-row'>
       <SideBar className='sticky bottom-0 left-0 top-0' />
-      <main className='w-full overflow-y-scroll bg-slate-100'>
+      <main className='flex w-full flex-col overflow-y-scroll bg-slate-100'>
         <Outlet />
       </main>
     </div>

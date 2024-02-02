@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import useAxios from '../hooks/use-axios';
 import Header from '../components/UI/Header';
+import Section from '../components/UI/Section';
 import AccountLink from '../components/AccountLink';
 import LinkAccountButton from '../components/LinkAccountButton';
 
@@ -41,7 +42,7 @@ const Accounts = () => {
   return (
     <>
       <Header title='Accounts' />
-      <section className='m-5'>
+      <Section>
         {accountLinks && (
           <ul>
             {accountLinks.map(link => (
@@ -52,7 +53,7 @@ const Accounts = () => {
           </ul>
         )}
         <LinkAccountButton onNewAccountLink={newAccountLinkHandler} />
-      </section>
+      </Section>
     </>
   );
 };

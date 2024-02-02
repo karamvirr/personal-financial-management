@@ -1,8 +1,8 @@
 import useAxios from '../hooks/use-axios';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
 import Header from '../components/UI/Header';
+import Section from '../components/UI/Section';
 import Card from '../components/UI/Card';
 import NetWorthSummary from '../components/NetWorthSummary';
 import BalanceSummary from '../components/BalanceSummary';
@@ -74,30 +74,31 @@ const Overview = () => {
   return (
     <>
       <Header title='Overview' />
-      <section className='mx-auto my-5 w-11/12'>
+      <Section>
         {balanceData && <NetWorthSummary data={balanceData} />}
         <div className='mb-5 flex justify-between'>
-          <Card className={`w-[calc(50%-0.625rem)]`}>
-            <div className='px-5 pt-5'>
-              <p className='text-sm font-semibold text-gray-500'>Spending</p>
-            </div>
-            {transactionData && (
+          {transactionData && (
+            <Card className={`w-[calc(50%-0.625rem)]`}>
+              <div className='px-5 pt-5'>
+                <p className='text-sm font-semibold text-gray-500'>Spending</p>
+              </div>
+
               <MonthlySpendingLineChart data={transactionData} />
-            )}
-          </Card>
-          <Card className={`w-[calc(50%-0.625rem)]`}>
-            <div className='px-5 pt-5'>
-              <p className='text-sm font-semibold text-gray-500'>
-                Transactions
-              </p>
-              <p className='text-xl font-bold'>Most Recent</p>
-            </div>
-            {recentTransactionData && (
+            </Card>
+          )}
+          {recentTransactionData && (
+            <Card className={`w-[calc(50%-0.625rem)]`}>
+              <div className='px-5 pt-5'>
+                <p className='text-sm font-semibold text-gray-500'>
+                  Transactions
+                </p>
+                <p className='text-xl font-bold'>Most Recent</p>
+              </div>
               <div className='my-5'>
                 {recentTransactionData.map(transaction => (
                   <div
                     className='border-t px-5 py-2.5 last:border-b'
-                    key={randomId()}>
+                    key={getRandomId()}>
                     <div className='grid grid-cols-3 text-sm text-gray-600'>
                       <p>{getTransactionName(transaction)}</p>
                       <p>
@@ -112,15 +113,15 @@ const Overview = () => {
                   </div>
                 ))}
               </div>
-            )}
-            <Link to='/transactions'>
-              <p
-                className='mb-2.5 cursor-pointer pl-5
+              <Link to='/transactions'>
+                <p
+                  className='mb-2.5 cursor-pointer pl-5
                     text-sm font-semibold text-blue-600 hover:text-blue-800'>
-                View all transactions
-              </p>
-            </Link>
-          </Card>
+                  View all transactions
+                </p>
+              </Link>
+            </Card>
+          )}
         </div>
         {balanceData &&
           Object.entries(balanceData).map(
@@ -129,7 +130,7 @@ const Overview = () => {
                 <BalanceSummary type={type} accounts={accounts} />
               )
           )}
-      </section>
+      </Section>
     </>
   );
 };

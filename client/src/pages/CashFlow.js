@@ -1,4 +1,5 @@
 import Header from '../components/UI/Header';
+import Section from '../components/UI/Section';
 import Card from '../components/UI/Card';
 import ExpenseSankeyDiagram from '../components/data-visualisations/ExpenseSankeyDiagram';
 import IncomeSankeyDiagram from '../components/data-visualisations/IncomeSankeyDiagram';
@@ -97,7 +98,7 @@ const CashFlow = () => {
   return (
     <>
       <Header title='Cash Flow' />
-      <section className='mx-auto my-5 w-11/12'>
+      <Section>
         {transactionData && (
           <>
             <DropdownMenu
@@ -137,7 +138,7 @@ const CashFlow = () => {
             )}
           </>
         )}
-      </section>
+      </Section>
     </>
   );
 };

@@ -1,5 +1,6 @@
 import useAxios from '../hooks/use-axios';
 import Header from '../components/UI/Header';
+import Section from '../components/UI/Section';
 import Card from '../components/UI/Card';
 import TransactionTable from '../components/TransactionTable';
 import DropdownMenu from '../components/DropdownMenu';
@@ -109,7 +110,7 @@ const Transactions = () => {
   return (
     <>
       <Header title='Transactions' />
-      <section className='mx-auto my-5 w-11/12'>
+      <Section>
         {transactionData && transactionDataMap && (
           <DropdownMenu
             className='mb-5'
@@ -147,7 +148,7 @@ const Transactions = () => {
             onSearch={onSearchHandler}
           />
         )}
-      </section>
+      </Section>
     </>
   );
 };
