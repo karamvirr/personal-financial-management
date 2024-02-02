@@ -87,9 +87,9 @@ const TransactionEdit = ({ transaction, onDismiss, onUpdate }) => {
       </div>
       <button
         onClick={editTransactionHandler}
-        className='mx-auto block rounded border border-blue-500 px-6 py-2
-          text-sm font-medium text-blue-500 transition-all duration-200
-          ease-in-out hover:bg-blue-500 hover:text-white'>
+        className='mx-auto block cursor-pointer rounded border border-blue-500
+          px-6 py-2 text-sm font-medium text-blue-500 transition-all
+          duration-200 ease-in-out hover:bg-blue-500 hover:text-white'>
         Update Transaction
       </button>
     </Modal>

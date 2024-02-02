@@ -32,9 +32,9 @@ const DropdownMenu = props => {
         id='months'
         value={selectedOption}
         onChange={onChangeHandler}
-        className='rounded-lg border border-gray-300
-          bg-gray-50 py-2.5 pl-2.5 pr-5 text-sm text-gray-800
-          focus:border-blue-500 focus:ring-blue-500'>
+        className='cursor-pointer rounded-lg border
+          border-gray-300 bg-gray-50 py-2.5 pl-2.5 pr-5 text-sm
+          text-gray-800 focus:border-blue-500 focus:ring-blue-500'>
         {props.items.map(item => (
           <option value={item} key={item}>
             {item}

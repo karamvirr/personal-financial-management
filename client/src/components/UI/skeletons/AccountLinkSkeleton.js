@@ -1,8 +1,19 @@
 import Card from '../Card';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import { useState, useEffect } from 'react';
 
 const AccountLinkSkeleton = () => {
+  const [showIsLoadingMessage, setShowIsLoadingMessage] = useState(false);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setShowIsLoadingMessage(true);
+    }, 2000);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
   return (
     <Card className='mx-auto w-3/5' repeat={2}>
       <div
@@ -33,6 +44,11 @@ const AccountLinkSkeleton = () => {
             </div>
           ))}
         <Skeleton height={20} width={96} />
+        {showIsLoadingMessage && (
+          <p className='text-center text-sm font-medium text-gray-500'>
+            Loading account data, please hang tight...
+          </p>
+        )}
       </div>
     </Card>
   );
