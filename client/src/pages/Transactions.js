@@ -1,4 +1,6 @@
 import useAxios from '../hooks/use-axios';
+import NetworkErrorMessage from '../components/NetworkErrorMessage';
+import NoDataAvailableMessage from '../components/NoDataAvailableMessage';
 import Header from '../components/UI/Header';
 import Section from '../components/UI/Section';
 import Card from '../components/UI/Card';
@@ -21,7 +23,7 @@ const Transactions = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOption, setSelectedOption] = useState(null);
 
-  const { sendRequest } = useAxios('/links', 'get');
+  const { error, sendRequest } = useAxios('/links', 'get');
 
   useEffect(() => {
     sendRequest(response => {
@@ -107,46 +109,55 @@ const Transactions = () => {
     });
   }
 
+  console.log('transactionData', transactionData);
+
   return (
     <>
       <Header title='Transactions' />
       <Section>
-        {transactionData && transactionDataMap && (
-          <DropdownMenu
-            className='mb-5'
-            label='Filter by month'
-            items={getTransactionMonths(transactionData)}
-            onSelect={onDropdownSelectHandler}
-          />
-        )}
-        {selectedOption && transactionDataMap && (
-          <div className='mb-5 flex justify-between'>
-            <Card className='w-[calc(50%-0.625rem)] p-5'>
-              <p className='text-sm font-semibold text-gray-500'>
-                Spending Distribution
-              </p>
-              <SpendingDistributionPieChart
-                transactionData={transactionDataMap}
-                option={selectedOption}
+        {error && error.message === 'Network Error' && <NetworkErrorMessage />}
+        {!error && transactionData && transactionData.length === 0 ? (
+          <NoDataAvailableMessage />
+        ) : (
+          <>
+            {transactionData && transactionDataMap && (
+              <DropdownMenu
+                className='mb-5'
+                label='Filter by month'
+                items={getTransactionMonths(transactionData)}
+                onSelect={onDropdownSelectHandler}
               />
-            </Card>
-            <Card className='w-[calc(50%-0.625rem)] p-5'>
-              <p className='text-sm font-semibold text-gray-500'>
-                Monthly Total
-              </p>
-              <MonthlySpendingBarChart
-                transactionData={transactionDataMap}
-                option={selectedOption}
+            )}
+            {selectedOption && transactionDataMap && (
+              <div className='mb-5 flex justify-between'>
+                <Card className='w-[calc(50%-0.625rem)] p-5'>
+                  <p className='text-sm font-semibold text-gray-500'>
+                    Spending Distribution
+                  </p>
+                  <SpendingDistributionPieChart
+                    transactionData={transactionDataMap}
+                    option={selectedOption}
+                  />
+                </Card>
+                <Card className='w-[calc(50%-0.625rem)] p-5'>
+                  <p className='text-sm font-semibold text-gray-500'>
+                    Monthly Total
+                  </p>
+                  <MonthlySpendingBarChart
+                    transactionData={transactionDataMap}
+                    option={selectedOption}
+                  />
+                </Card>
+              </div>
+            )}
+            {filteredTransactionData && (
+              <TransactionTable
+                data={filteredTransactionData}
+                onSort={onSortHandler}
+                onSearch={onSearchHandler}
               />
-            </Card>
-          </div>
-        )}
-        {filteredTransactionData && (
-          <TransactionTable
-            data={filteredTransactionData}
-            onSort={onSortHandler}
-            onSearch={onSearchHandler}
-          />
+            )}
+          </>
         )}
       </Section>
     </>

@@ -2,6 +2,8 @@ import useAxios from '../hooks/use-axios';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/UI/Header';
+import NetworkErrorMessage from '../components/NetworkErrorMessage';
+import NoDataAvailableMessage from '../components/NoDataAvailableMessage';
 import Section from '../components/UI/Section';
 import Card from '../components/UI/Card';
 import NetWorthSummary from '../components/NetWorthSummary';
@@ -21,7 +23,7 @@ const Overview = () => {
   const [balanceData, setBalanceData] = useState(null);
   // format: { 'YYYY-MM': [] }
   const [transactionData, setTransactionData] = useState(null);
-  const { sendRequest } = useAxios('/links', 'get');
+  const { error, sendRequest } = useAxios('/links', 'get');
 
   useEffect(() => {
     sendRequest(response => {
@@ -75,61 +77,72 @@ const Overview = () => {
     <>
       <Header title='Overview' />
       <Section>
-        {balanceData && <NetWorthSummary data={balanceData} />}
-        <div className='mb-5 flex justify-between'>
-          {transactionData && (
-            <Card className={`w-[calc(50%-0.625rem)]`}>
-              <div className='px-5 pt-5'>
-                <p className='text-sm font-semibold text-gray-500'>Spending</p>
-              </div>
-
-              <MonthlySpendingLineChart data={transactionData} />
-            </Card>
-          )}
-          {recentTransactionData && (
-            <Card className={`w-[calc(50%-0.625rem)]`}>
-              <div className='px-5 pt-5'>
-                <p className='text-sm font-semibold text-gray-500'>
-                  Transactions
-                </p>
-                <p className='text-xl font-bold'>Most Recent</p>
-              </div>
-              <div className='my-5'>
-                {recentTransactionData.map(transaction => (
-                  <div
-                    className='border-t px-5 py-2.5 last:border-b'
-                    key={getRandomId()}>
-                    <div className='grid grid-cols-3 text-sm text-gray-600'>
-                      <p>{getTransactionName(transaction)}</p>
-                      <p>
-                        {humanize(
-                          transaction.personal_finance_category.primary
-                        )}
-                      </p>
-                      <p className='text-right'>
-                        {formatCurrency(transaction.amount)}
-                      </p>
-                    </div>
+        {error && error.message === 'Network Error' && <NetworkErrorMessage />}
+        {!error &&
+        isObjectEmpty(balanceData) &&
+        isObjectEmpty(transactionData) ? (
+          <NoDataAvailableMessage />
+        ) : (
+          <>
+            {balanceData && <NetWorthSummary data={balanceData} />}
+            <div className='mb-5 flex justify-between'>
+              {transactionData && (
+                <Card className={`w-[calc(50%-0.625rem)]`}>
+                  <div className='px-5 pt-5'>
+                    <p className='text-sm font-semibold text-gray-500'>
+                      Spending
+                    </p>
                   </div>
-                ))}
-              </div>
-              <Link to='/transactions'>
-                <p
-                  className='mb-2.5 cursor-pointer pl-5
+
+                  <MonthlySpendingLineChart data={transactionData} />
+                </Card>
+              )}
+              {recentTransactionData && (
+                <Card className={`w-[calc(50%-0.625rem)]`}>
+                  <div className='px-5 pt-5'>
+                    <p className='text-sm font-semibold text-gray-500'>
+                      Transactions
+                    </p>
+                    <p className='text-xl font-bold'>Most Recent</p>
+                  </div>
+                  <div className='my-5'>
+                    {recentTransactionData.map(transaction => (
+                      <div
+                        className='border-t px-5 py-2.5 last:border-b'
+                        key={getRandomId()}>
+                        <div className='grid grid-cols-3 text-sm text-gray-600'>
+                          <p>{getTransactionName(transaction)}</p>
+                          <p>
+                            {humanize(
+                              transaction.personal_finance_category.primary
+                            )}
+                          </p>
+                          <p className='text-right'>
+                            {formatCurrency(transaction.amount)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <Link to='/transactions'>
+                    <p
+                      className='mb-2.5 cursor-pointer pl-5
                     text-sm font-semibold text-blue-600 hover:text-blue-800'>
-                  View all transactions
-                </p>
-              </Link>
-            </Card>
-          )}
-        </div>
-        {balanceData &&
-          Object.entries(balanceData).map(
-            ([type, accounts]) =>
-              accounts.data && (
-                <BalanceSummary type={type} accounts={accounts} />
-              )
-          )}
+                      View all transactions
+                    </p>
+                  </Link>
+                </Card>
+              )}
+            </div>
+            {balanceData &&
+              Object.entries(balanceData).map(
+                ([type, accounts]) =>
+                  accounts.data && (
+                    <BalanceSummary type={type} accounts={accounts} />
+                  )
+              )}
+          </>
+        )}
       </Section>
     </>
   );

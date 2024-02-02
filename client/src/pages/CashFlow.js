@@ -1,5 +1,7 @@
 import Header from '../components/UI/Header';
 import Section from '../components/UI/Section';
+import NetworkErrorMessage from '../components/NetworkErrorMessage';
+import NoDataAvailableMessage from '../components/NoDataAvailableMessage';
 import Card from '../components/UI/Card';
 import ExpenseSankeyDiagram from '../components/data-visualisations/ExpenseSankeyDiagram';
 import IncomeSankeyDiagram from '../components/data-visualisations/IncomeSankeyDiagram';
@@ -14,7 +16,8 @@ const {
   formatDate,
   formatCurrency,
   formatPercent,
-  humanize
+  humanize,
+  isObjectEmpty
 } = require('../utils/helpers');
 
 const buildCard = (title, value, color, isPercent) => {
@@ -31,9 +34,10 @@ const buildCard = (title, value, color, isPercent) => {
 };
 
 const CashFlow = () => {
+  // format: [{ transaction }, ...}]
   const [transactionData, setTransactionData] = useState(null);
   const [filteredTransactionData, setFilteredTransactionData] = useState(null);
-  const { sendRequest } = useAxios('/links', 'get');
+  const { error, sendRequest } = useAxios('/links', 'get');
 
   useEffect(() => {
     sendRequest(response => {
@@ -99,42 +103,53 @@ const CashFlow = () => {
     <>
       <Header title='Cash Flow' />
       <Section>
-        {transactionData && (
+        {error && error.message === 'Network Error' && <NetworkErrorMessage />}
+        {!error && isObjectEmpty(transactionData) ? (
+          <NoDataAvailableMessage />
+        ) : (
           <>
-            <DropdownMenu
-              items={getTransactionMonths(transactionData)}
-              label='Filter by month'
-              onSelect={onDropdownSelectHandler}
-              className='mb-5'
-              excludeAllOption={true}
-            />
-            <div className='mb-5 grid grid-cols-4 gap-5'>
-              {buildCard('Income', income, getColor(income))}
-              {buildCard('Expenses', expenses, getColor(-expenses))}
-              {buildCard('Total Savings', totalSavings, getColor(totalSavings))}
-              {buildCard('Savings Rate', savingsRate, 'text-black', true)}
-            </div>
-            {expenseData && (
-              <Card className='mb-5'>
-                <div className='px-5 pt-5'>
-                  <p className='text-sm font-semibold text-gray-500'>
-                    Cash Flow
-                  </p>
-                  <p className='text-xl font-bold'>Expenses</p>
+            {transactionData && (
+              <>
+                <DropdownMenu
+                  items={getTransactionMonths(transactionData)}
+                  label='Filter by month'
+                  onSelect={onDropdownSelectHandler}
+                  className='mb-5'
+                  excludeAllOption={true}
+                />
+                <div className='mb-5 grid grid-cols-4 gap-5'>
+                  {buildCard('Income', income, getColor(income))}
+                  {buildCard('Expenses', expenses, getColor(-expenses))}
+                  {buildCard(
+                    'Total Savings',
+                    totalSavings,
+                    getColor(totalSavings)
+                  )}
+                  {buildCard('Savings Rate', savingsRate, 'text-black', true)}
                 </div>
-                <ExpenseSankeyDiagram data={expenseData} />
-              </Card>
-            )}
-            {incomeData && (
-              <Card className='mb-5'>
-                <div className='px-5 pt-5'>
-                  <p className='text-sm font-semibold text-gray-500'>
-                    Cash Flow
-                  </p>
-                  <p className='text-xl font-bold'>Income</p>
-                </div>
-                <IncomeSankeyDiagram data={incomeData} />
-              </Card>
+                {expenseData && expenseData.length > 1 && (
+                  <Card className='mb-5'>
+                    <div className='px-5 pt-5'>
+                      <p className='text-sm font-semibold text-gray-500'>
+                        Cash Flow
+                      </p>
+                      <p className='text-xl font-bold'>Expenses</p>
+                    </div>
+                    <ExpenseSankeyDiagram data={expenseData} />
+                  </Card>
+                )}
+                {incomeData && incomeData.length > 1 && (
+                  <Card className='mb-5'>
+                    <div className='px-5 pt-5'>
+                      <p className='text-sm font-semibold text-gray-500'>
+                        Cash Flow
+                      </p>
+                      <p className='text-xl font-bold'>Income</p>
+                    </div>
+                    <IncomeSankeyDiagram data={incomeData} />
+                  </Card>
+                )}
+              </>
             )}
           </>
         )}

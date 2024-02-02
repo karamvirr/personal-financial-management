@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import useAxios from '../hooks/use-axios';
 import Header from '../components/UI/Header';
+import NetworkErrorMessage from '../components/NetworkErrorMessage';
 import Section from '../components/UI/Section';
 import AccountLink from '../components/AccountLink';
 import LinkAccountButton from '../components/LinkAccountButton';
 
 const Accounts = () => {
   const [accountLinks, setAccountLinks] = useState(null);
-  const { sendRequest } = useAxios('/links', 'get');
+  const { error, sendRequest } = useAxios('/links', 'get');
 
   const updateAccountLinkHandler = data => {
     setAccountLinks(prevState => {
@@ -43,16 +44,25 @@ const Accounts = () => {
     <>
       <Header title='Accounts' />
       <Section>
-        {accountLinks && (
-          <ul>
-            {accountLinks.map(link => (
-              <li key={link._id} className='mb-5'>
-                <AccountLink data={link} onUpdate={updateAccountLinkHandler} />
-              </li>
-            ))}
-          </ul>
+        {error && error.message === 'Network Error' ? (
+          <NetworkErrorMessage />
+        ) : (
+          <>
+            {accountLinks && (
+              <ul>
+                {accountLinks.map(link => (
+                  <li key={link._id} className='mb-5'>
+                    <AccountLink
+                      data={link}
+                      onUpdate={updateAccountLinkHandler}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
+            <LinkAccountButton onNewAccountLink={newAccountLinkHandler} />
+          </>
         )}
-        <LinkAccountButton onNewAccountLink={newAccountLinkHandler} />
       </Section>
     </>
   );
