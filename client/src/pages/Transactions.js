@@ -109,8 +109,6 @@ const Transactions = () => {
     });
   }
 
-  console.log('transactionData', transactionData);
-
   return (
     <>
       <Header title='Transactions' />

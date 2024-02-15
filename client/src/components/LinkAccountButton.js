@@ -59,14 +59,20 @@ const LinkAccountButton = props => {
     });
   }, []);
 
-  if (generateLinkTokenError) {
-    const message =
-      generateLinkTokenError.response.data.message ||
-      generateLinkTokenError.message;
-    ctx.showToast(message, 'error');
-  }
+  useEffect(() => {
+    if (generateLinkTokenError) {
+      let message = generateLinkTokenError.response?.data?.message;
+      if (!message) {
+        message = generateLinkTokenError.message;
+      }
 
-  console.log('render - LinkAccountButton');
+      ctx.showToast(
+        `Uh-oh, failed to initialize account link button, ${message}`,
+        'error'
+      );
+    }
+  }, [generateLinkTokenError]);
+
   return (
     <button
       className={`mx-auto mt-5 block rounded
