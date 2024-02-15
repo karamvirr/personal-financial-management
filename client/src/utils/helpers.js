@@ -6,6 +6,12 @@ const isANumber = value => {
   return regex.test(value);
 };
 
+// @param date: date object to be checked if it is valid
+// @return boolean: true if the date is valid, false otherwise
+const isValidDate = date => {
+  return date instanceof Date && !isNaN(date);
+};
+
 // @param value: number to be formatted as currency
 // @return string in currency format (USD)
 const formatCurrency = value => {
@@ -34,21 +40,28 @@ const formatPercent = value => {
 };
 
 // formats the given date string to MMMM YYYY format
-// example: 2024-01 => January 2024
+// example: 2024-01    => January 2024
+//          2024-02-01 => February 2024
+//          2024       => 2024
 //
+// @param dateStr: string in format YYYY-MM or YYYY-MM-DD format
 // @return string in MMMM YYYY format
 const formatDate = dateStr => {
-  if (!dateStr || dateStr.split('-').length !== 2) {
+  if (!dateStr || !isValidDate(new Date(dateStr))) {
     return null;
   }
-
   const split = dateStr.split('-');
-  const monthInt = +split[1];
   const year = split[0];
-  const month = new Date(year, monthInt - 1).toLocaleString('default', {
-    month: 'long'
-  });
-  return `${month} ${year}`;
+  let result = year;
+  if (split.length > 1) {
+    const monthInt = +split[1];
+    const month = new Date(year, monthInt - 1).toLocaleString('default', {
+      month: 'long'
+    });
+    result = `${month} ${year}`;
+  }
+
+  return result;
 };
 
 // @param date: string in format YYYY-MM-DD
@@ -73,10 +86,11 @@ const formatTransactionDate = date => {
 // @param timestamp: number in milliseconds since epoch
 // @return string in MM/DD/YYYY HH:MM AM/PM format (12 hour clock)
 const formatTime = timestamp => {
-  if (!isANumber(timestamp)) {
+  const date = new Date(timestamp);
+  if (!timestamp || !isValidDate(date)) {
     return null;
   }
-  const date = new Date(timestamp);
+
   const hours = date.getHours();
   let minutes = date.getMinutes();
   minutes = minutes < 10 ? '0' + minutes : minutes;
@@ -196,6 +210,10 @@ const getTransactionName = transaction => {
 // @param obj: object to be checked if it is empty
 // @return boolean: true if the object is empty, false otherwise
 const isObjectEmpty = obj => {
+  if (!obj) {
+    return true;
+  }
+
   return Object.keys(obj).length === 0;
 };
 

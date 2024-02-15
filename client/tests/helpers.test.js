@@ -62,15 +62,20 @@ describe('formatPercent', () => {
 describe('formatDate', () => {
   it('returns a string in MMMM YYYY format', () => {
     expect(formatDate('2024-01')).toBe('January 2024');
+    expect(formatDate('2024-02-01')).toBe('February 2024');
     expect(formatDate('2024-12')).toBe('December 2024');
-    expect(formatDate('2024-05')).toBe('May 2024');
+    expect(formatDate('2024-3-3')).toBe('March 2024');
     expect(formatDate('2023-08')).toBe('August 2023');
+    expect(formatDate('2025-1')).toBe('January 2025');
+    expect(formatDate('2024')).toBe('2024');
   });
 
   it('returns null for invalid input', () => {
-    expect(formatDate('2024')).toBeNull();
     expect(formatDate('')).toBeNull();
     expect(formatDate(null)).toBeNull();
+    expect(formatDate(undefined)).toBeNull();
+    expect(formatDate({})).toBeNull();
+    expect(formatDate([])).toBeNull();
   });
 });
 
@@ -237,5 +242,10 @@ describe('isObjectEmpty', () => {
 
   it('returns false for a non-empty object', () => {
     expect(isObjectEmpty({ key: 'value' })).toBe(false);
+  });
+
+  it('returns true for invalid input', () => {
+    expect(isObjectEmpty(null)).toBe(true);
+    expect(isObjectEmpty(undefined)).toBe(true);
   });
 });
