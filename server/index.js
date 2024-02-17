@@ -21,15 +21,6 @@ require('./db')();
 app.use('/links', require('./routes/links'));
 app.use('/plaid', require('./routes/plaid'));
 
-app.get('/', (_, res) => {
-  res.send('Hello World!');
-});
-
-app.post('/test', (req, res) => {
-  console.log(req.body);
-  res.send('ok');
-});
-
 const server = app.listen(PORT, () => {
   console.log(`app listening on port ${PORT}...`);
 });
