@@ -41,6 +41,25 @@ const getLastFourteenMonths = () => {
   return months;
 };
 
+// @param list: list of elements
+// @param num: number of random elements to choose
+// @return array: array of three random elements from the list
+//         if the list has less than three elements, return the list
+const getRandomElements = (list, num) => {
+  if (!list || list.length < num) {
+    return list;
+  }
+
+  const result = [];
+  while (result.length < num) {
+    const randomIndex = Math.floor(Math.random() * list.length);
+    if (!result.includes(list[randomIndex])) {
+      result.push(list[randomIndex]);
+    }
+  }
+  return result;
+};
+
 // @param name: name of the account link
 // @return object: account link object with empty balance and transaction data
 const mockAccountLink = name => {
@@ -140,6 +159,7 @@ module.exports = {
   getRandomNumber,
   getRandomDayOfMonth,
   getLastFourteenMonths,
+  getRandomElements,
   mockAccountLink,
   mockAccountBalance,
   mockTransaction

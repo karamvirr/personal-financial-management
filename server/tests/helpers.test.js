@@ -3,6 +3,7 @@ const {
   getRandomNumber,
   getLastFourteenMonths,
   getRandomDayOfMonth,
+  getRandomElements,
   mockAccountLink,
   mockAccountBalance,
   mockTransaction
@@ -51,6 +52,35 @@ describe('getRandomDayOfMonth', () => {
     const day = getRandomDayOfMonth();
     expect(typeof day).toBe('string');
     expect(day.length).toBe(2);
+  });
+});
+
+describe('getRandomElements', () => {
+  it('returns an array of three random elements from the list', () => {
+    const list = ['a', 'b', 'c', 'd', 'e'];
+    const elements = getRandomElements(list, 3);
+    expect(elements.length).toBe(3);
+    elements.forEach(element => {
+      expect(list).toContain(element);
+    });
+  });
+
+  it('returns the list if it has less than three elements', () => {
+    const list = ['a', 'b'];
+    const elements = getRandomElements(list, 3);
+    expect(elements).toEqual(list);
+  });
+
+  it('returns an empty array if the list is empty', () => {
+    const list = [];
+    const elements = getRandomElements(list, 3);
+    expect(elements).toEqual(list);
+  });
+
+  it('returns an empty array if the list is null', () => {
+    const list = null;
+    const elements = getRandomElements(list, 3);
+    expect(elements).toEqual(list);
   });
 });
 
@@ -116,10 +146,10 @@ describe('mockTransaction', () => {
     expect(mock).toHaveProperty('location');
     expect(mock).toHaveProperty('payment_channel');
     expect(mock).toHaveProperty('transaction_type');
-    expect(mock).toHaveProperty('iso_currency_code', 'USD');
     expect(mock).toHaveProperty('merchant_entity_id');
     expect(mock).toHaveProperty('website');
     expect(mock).toHaveProperty('note');
+    expect(mock).toHaveProperty('iso_currency_code', 'USD');
     expect(mock).toHaveProperty('category', transaction.category);
     expect(mock).toHaveProperty('amount', transaction.amount);
     expect(mock).toHaveProperty('date', transaction.date);
