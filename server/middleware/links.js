@@ -1,49 +1,15 @@
-const {
-  BALANCES,
-  BALANCES_SECONDARY,
-  TRANSACTIONS,
-  TRANSACTIONS_SECONDARY
-} = require('../utils/mock-data');
 const { DEMO_MODE } = require('../utils/constants');
-const { randomString } = require('../utils/helpers');
+const { getAccountLinks } = require('../utils/mock-data/links');
+const { getTransactionData } = require('../utils/mock-data/transactions');
+const { getAccountBalanceData } = require('../utils/mock-data/accounts');
+const { getRandomId } = require('../utils/helpers');
 
-const accounts = [
-  {
-    _id: '1',
-    name: 'Chase',
-    access_token: `access-demo-${randomString()}`,
-    item_id: randomString(),
-    created_at: new Date(),
-    balance: {
-      accounts: [],
-      updated_at: null
-    },
-    transactions: {
-      data: [],
-      updated_at: null
-    }
-  },
-  {
-    _id: '2',
-    name: 'WECU',
-    access_token: `access-demo-${randomString()}`,
-    item_id: randomString(),
-    created_at: new Date(),
-    balance: {
-      accounts: [],
-      updated_at: null
-    },
-    transactions: {
-      data: [],
-      updated_at: null
-    }
-  }
-];
+let accountLinks = getAccountLinks();
 
 // @route GET /links
 const getLinksMiddleware = (_, res, next) => {
   if (DEMO_MODE) {
-    res.send(accounts);
+    res.send(accountLinks.sort((a, b) => a.name.localeCompare(b.name)));
   } else {
     next();
   }
@@ -51,13 +17,13 @@ const getLinksMiddleware = (_, res, next) => {
 
 // @route POST /links
 const createLinkMiddleware = (_, res, next) => {
-  const name = `Bank #${Math.random().toString(36).slice(2, 7)}`;
+  const name = `Bank #${accountLinks.length + 1}`;
   if (DEMO_MODE) {
     res.send({
-      _id: accounts.length + 1,
+      _id: getRandomId(),
       name: name,
-      access_token: `access-demo-${randomString()}`,
-      item_id: randomString(),
+      access_token: `access-demo-${getRandomId()}`,
+      item_id: getRandomId(),
       created_at: new Date(),
       balance: {
         accounts: [],
@@ -65,7 +31,8 @@ const createLinkMiddleware = (_, res, next) => {
       },
       transactions: {
         data: [],
-        updated_at: new Date()
+        updated_at: new Date(),
+        cursor: null
       }
     });
   } else {
@@ -76,14 +43,14 @@ const createLinkMiddleware = (_, res, next) => {
 // @route DELETE /links/:id
 const deleteLinkMiddleware = (req, res, next) => {
   if (DEMO_MODE) {
-    const index = accounts.findIndex(link => link._id === req.params.id);
+    const index = accountLinks.findIndex(link => link._id === req.params.id);
     if (index === -1) {
       return res.status(404).json({
         error: 'Not found',
         message: 'Link not found'
       });
     }
-    accounts.splice(index, 1);
+    accountLinks.splice(index, 1);
     res.send({
       id: req.params.id,
       message: 'Link deleted'
@@ -97,23 +64,27 @@ const deleteLinkMiddleware = (req, res, next) => {
 const updateLinkBalanceMiddleware = (req, res, next) => {
   if (DEMO_MODE) {
     const func = () => {
-      const index = accounts.findIndex(link => link._id === req.params.id);
+      const index = accountLinks.findIndex(link => link._id === req.params.id);
       if (index === -1) {
         return res.status(404).json({
           error: 'Not found',
           message: 'Link not found'
         });
       }
-      const link = accounts[index];
+      const link = accountLinks[index];
       link.balance = {
-        accounts: Math.random() < 0.5 ? BALANCES : BALANCES_SECONDARY,
+        accounts: getAccountBalanceData(link.name),
         updated_at: new Date()
       };
 
       res.send(link);
     };
     if (req.originalUrl.includes('balance')) {
-      setTimeout(func, 1500);
+      // I've noticed that the Plaid endpoint for balance data takes a while to
+      // responsd, so we'll simulate that here.
+      // const delay = getRandomNumber(5, 10) * 1000; TODO - uncomment this line
+      const delay = 100; // TODO - remove this line
+      setTimeout(func, delay);
     } else {
       func();
     }
@@ -125,21 +96,23 @@ const updateLinkBalanceMiddleware = (req, res, next) => {
 // @route PUT /links/:id/transactions
 const updateLinkTransactionsMiddleware = (req, res, next) => {
   if (DEMO_MODE) {
-    const index = accounts.findIndex(link => link._id === req.params.id);
+    const index = accountLinks.findIndex(
+      link => link._id.toString() === req.params.id.toString()
+    );
+
     if (index === -1) {
       return res.status(404).json({
         error: 'Not found',
         message: 'Link not found'
       });
     }
-    const link = accounts[index];
+
+    const link = accountLinks[index];
     link.transactions = {
-      data: Math.random() < 0.5 ? TRANSACTIONS : TRANSACTIONS_SECONDARY,
-      updated_at: new Date()
+      data: getTransactionData(link.name),
+      updated_at: new Date(),
+      cursor: getRandomId()
     };
-    link.transactions.data.forEach(transaction => {
-      transaction.account_id = link._id; // This hack will work for now...
-    });
 
     res.send(link);
   } else {
@@ -150,17 +123,19 @@ const updateLinkTransactionsMiddleware = (req, res, next) => {
 // @route PUT /links/:id/transactions/:transaction_id
 const updateAccountTransactionMiddleeware = (req, res, next) => {
   if (DEMO_MODE) {
-    const { id, transaction_id } = req.params;
-    const index = accounts.findIndex(link => link._id === id);
+    const id = req.params.id.toString();
+    const transaction_id = req.params.transaction_id.toString();
+    const index = accountLinks.findIndex(link => link._id === id);
     if (index === -1) {
       return res.status(404).json({
         error: 'Not found',
         message: 'Link not found'
       });
     }
-    const link = accounts[index];
+
+    const link = accountLinks[index];
     const transactionIndex = link.transactions.data.findIndex(
-      transaction => transaction.transaction_id === transaction_id
+      transaction => transaction._id === transaction_id
     );
     if (transactionIndex === -1) {
       return res.status(404).json({
