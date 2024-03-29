@@ -63,6 +63,8 @@ const plaidTransactionData = () => {
           detailed: 'GENERAL_MERCHANDISE_OTHER_GENERAL_MERCHANDISE',
           primary: 'GENERAL_MERCHANDISE'
         },
+        logo_url:
+          'https://media.glassdoor.com/sql/373813/sparkfun-squarelogo-1431953977111.png',
         personal_finance_category_icon_url:
           'https://plaid-category-icons.plaid.com/PFC_GENERAL_MERCHANDISE.png',
         transaction_type: 'place'

@@ -24,6 +24,9 @@ const fidelityTransactionData = () => {
           detailed: 'INCOME_DIVIDENDS',
           primary: 'INCOME'
         },
+        logo_url:
+          'https://media.glassdoor.com/sql/2786/fidelity-' +
+          'investments-squareLogo-1612542116323.png',
         personal_finance_category_icon_url:
           'https://plaid-category-icons.plaid.com/PFC_INCOME.png'
       })

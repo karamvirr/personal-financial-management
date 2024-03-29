@@ -25,6 +25,10 @@ const chaseTransactionData = () => {
             detailed: 'GENERAL_MERCHANDISE_ONLINE_MARKETPLACES',
             primary: 'GENERAL_MERCHANDISE'
           },
+          logo_url:
+            'https://banner2.cleanpng.com/20180501/abw/kisspng-amazon-com-' +
+            'logo-retail-brand-publishing-chat-room-logo-5ae868f510e770.' +
+            '1581033615251806610693.jpg',
           personal_finance_category_icon_url:
             'https://plaid-category-icons.plaid.com/PFC_GENERAL_MERCHANDISE.png',
           transaction_type: 'digital'

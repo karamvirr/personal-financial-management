@@ -2,6 +2,7 @@ const {
   getRandomNumber,
   getLastFourteenMonths,
   getRandomDayOfMonth,
+  getRandomElements,
   mockTransaction
 } = require('../../helpers');
 
@@ -237,6 +238,9 @@ const wecuTransactionData = () => {
           detailed: 'GENERAL_SERVICES_OTHER_GENERAL_SERVICES',
           primary: 'GENERAL_SERVICES'
         },
+        logo_url:
+          'https://gdm-catalog-fmapi-prod.imgix.net/ProductLogo/695ed7b0-' +
+          '1482-4ffa-bfdf-d483c02d2e0b.png?w=100&q=50',
         personal_finance_category_icon_url:
           'https://plaid-category-icons.plaid.com/PFC_GENERAL_SERVICES.png',
         transaction_type: 'place',
@@ -328,6 +332,9 @@ const wecuTransactionData = () => {
             detailed: 'ENTERTAINMENT_TV_AND_MOVIES',
             primary: 'ENTERTAINMENT'
           },
+          logo_url:
+            'https://banner2.cleanpng.com/20180501/abw/kisspng-amazon-com-' +
+            'logo-retail-brand-publishing-chat-room-logo-5ae868f510e770.1581033615251806610693.jpg',
           personal_finance_category_icon_url:
             'https://plaid-category-icons.plaid.com/PFC_ENTERTAINMENT.png',
           transaction_type: 'place',
@@ -377,6 +384,309 @@ const wecuTransactionData = () => {
         }
       ].forEach(transaction => data.push(mockTransaction(transaction)));
     }
+
+    // fast food and restaurants
+    const foodData = [
+      {
+        date: `${month}-${getRandomDayOfMonth()}`,
+        amount: getRandomNumber(10, 20),
+        category: ['Food and Drink', 'Restaurants', 'Fast Food'],
+        counterparties: [
+          {
+            confidence_level: 'VERY_HIGH',
+            entity_id: 'OEkMw43LJ9yzKOJqrLJyJVBY8dyYa4LqeRLLn',
+            logo_url:
+              'https://plaid-merchant-logos.plaid.com/jack_in_the_box_528.png',
+            name: 'Jack in the Box',
+            phone_number: null,
+            type: 'merchant',
+            website: 'jackinthebox.com'
+          }
+        ],
+        logo_url:
+          'https://plaid-merchant-logos.plaid.com/jack_in_the_box_528.png',
+        merchant_name: 'Jack in the Box',
+        name: 'Jack in the Box',
+        payment_channel: 'in store',
+        personal_finance_category: {
+          confidence_level: 'VERY_HIGH',
+          detailed: 'FOOD_AND_DRINK_FAST_FOOD',
+          primary: 'FOOD_AND_DRINK'
+        },
+        personal_finance_category_icon_url:
+          'https://plaid-category-icons.plaid.com/PFC_FOOD_AND_DRINK.png',
+        transaction_type: 'place'
+      },
+      {
+        date: `${month}-${getRandomDayOfMonth()}`,
+        amount: getRandomNumber(10, 20),
+        category: ['Food and Drink', 'Restaurants'],
+        counterparties: [
+          {
+            confidence_level: 'VERY_HIGH',
+            entity_id: 'EJ70Mg1YmVNWVyXj85wvmNzjzg5madJyLYgo1',
+            logo_url:
+              'https://plaid-merchant-logos.plaid.com/dairy_queen_265.png',
+            name: 'Dairy Queen',
+            phone_number: null,
+            type: 'merchant',
+            website: 'dairyqueen.com'
+          }
+        ],
+        logo_url: 'https://plaid-merchant-logos.plaid.com/dairy_queen_265.png',
+        merchant_name: 'Dairy Queen',
+        name: 'Dairy Queen',
+        payment_channel: 'in store',
+        personal_finance_category: {
+          confidence_level: 'VERY_HIGH',
+          detailed: 'FOOD_AND_DRINK_FAST_FOOD',
+          primary: 'FOOD_AND_DRINK'
+        },
+        personal_finance_category_icon_url:
+          'https://plaid-category-icons.plaid.com/PFC_FOOD_AND_DRINK.png',
+        transaction_type: 'place'
+      },
+      {
+        date: `${month}-${getRandomDayOfMonth()}`,
+        amount: getRandomNumber(15, 30),
+        category: ['Food and Drink', 'Restaurants', 'Fast Food'],
+        counterparties: [
+          {
+            confidence_level: 'VERY_HIGH',
+            entity_id: 'wdB3azEL75wzEk5VX1gqbLqQRyW8kVvOAARoq',
+            logo_url:
+              'https://plaid-merchant-logos.plaid.com/chickfila_197.png',
+            name: 'Chick-fil-A',
+            phone_number: null,
+            type: 'merchant',
+            website: 'chick-fil-a.com'
+          }
+        ],
+        logo_url: 'https://plaid-merchant-logos.plaid.com/chickfila_197.png',
+        merchant_name: 'Chick-fil-A',
+        name: 'Chick-fil-A',
+        payment_channel: 'in store',
+        personal_finance_category: {
+          confidence_level: 'VERY_HIGH',
+          detailed: 'FOOD_AND_DRINK_FAST_FOOD',
+          primary: 'FOOD_AND_DRINK'
+        },
+        personal_finance_category_icon_url:
+          'https://plaid-category-icons.plaid.com/PFC_FOOD_AND_DRINK.png',
+        transaction_type: 'place'
+      },
+      {
+        date: `${month}-${getRandomDayOfMonth()}`,
+        amount: getRandomNumber(10, 20),
+        category: ['Food and Drink', 'Restaurants', 'Fast Food'],
+        counterparties: [
+          {
+            confidence_level: 'VERY_HIGH',
+            entity_id: 'WMBDMdZdmnew9EBd5qEWAdnOMYQvJDa6KvjQe',
+            logo_url:
+              'https://plaid-merchant-logos.plaid.com/taco_bell_989.png',
+            name: 'Taco Bell',
+            phone_number: null,
+            type: 'merchant',
+            website: 'tacobell.com'
+          }
+        ],
+        logo_url: 'https://plaid-merchant-logos.plaid.com/taco_bell_989.png',
+        merchant_name: 'Taco Bell',
+        name: 'Taco Bell',
+        payment_channel: 'in store',
+        personal_finance_category: {
+          confidence_level: 'VERY_HIGH',
+          detailed: 'FOOD_AND_DRINK_FAST_FOOD',
+          primary: 'FOOD_AND_DRINK'
+        },
+        personal_finance_category_icon_url:
+          'https://plaid-category-icons.plaid.com/PFC_FOOD_AND_DRINK.png',
+        transaction_type: 'place'
+      }
+    ];
+    getRandomElements(foodData, 2).forEach(transaction => {
+      data.push(mockTransaction(transaction));
+    });
+
+    // miscellaneous
+    const miscData = [
+      {
+        date: `${month}-${getRandomDayOfMonth()}`,
+        amount: getRandomNumber(50, 150),
+        category: ['Shops', 'Computers and Electronics'],
+        counterparties: [
+          {
+            confidence_level: 'VERY_HIGH',
+            entity_id: 'q63vdERovbmjyQoYA6k7m6je8EzOv6ywA7Ea2',
+            logo_url: 'https://plaid-merchant-logos.plaid.com/best_buy_103.png',
+            name: 'Best Buy',
+            phone_number: null,
+            type: 'merchant',
+            website: 'bestbuy.com'
+          }
+        ],
+        logo_url: 'https://plaid-merchant-logos.plaid.com/best_buy_103.png',
+        merchant_name: 'Best Buy',
+        name: 'Best Buy',
+        payment_channel: 'in store',
+        personal_finance_category: {
+          confidence_level: 'VERY_HIGH',
+          detailed: 'GENERAL_MERCHANDISE_ELECTRONICS',
+          primary: 'GENERAL_MERCHANDISE'
+        },
+        personal_finance_category_icon_url:
+          'https://plaid-category-icons.plaid.com/PFC_GENERAL_MERCHANDISE.png',
+        transaction_type: 'place'
+      },
+      {
+        date: `${month}-${getRandomDayOfMonth()}`,
+        amount: getRandomNumber(15, 40),
+        category: ['Recreation', 'Arts and Entertainment'],
+        counterparties: [
+          {
+            confidence_level: 'VERY_HIGH',
+            entity_id: 'paA2onLyDMw0L80eR72MQ1neQoN5Oyo7OpkB1',
+            logo_url:
+              'https://plaid-merchant-logos.plaid.com/century_theatres_181.png',
+            name: 'Century Theatres',
+            phone_number: null,
+            type: 'merchant',
+            website: 'cinemark.com'
+          }
+        ],
+        logo_url:
+          'https://plaid-merchant-logos.plaid.com/century_theatres_181.png',
+        merchant_name: 'Century Theatres',
+        name: 'Century Theatres',
+        payment_channel: 'in store',
+        personal_finance_category: {
+          confidence_level: 'HIGH',
+          detailed: 'ENTERTAINMENT_TV_AND_MOVIES',
+          primary: 'ENTERTAINMENT'
+        },
+        personal_finance_category_icon_url:
+          'https://plaid-category-icons.plaid.com/PFC_ENTERTAINMENT.png',
+        transaction_type: 'place'
+      },
+      {
+        date: `${month}-${getRandomDayOfMonth()}`,
+        amount: getRandomNumber(5, 15),
+        category: ['Shops', 'Pharmacies'],
+        counterparties: [
+          {
+            confidence_level: 'VERY_HIGH',
+            entity_id: 'qJ0kRK8E9vpQKom2wJJmm0Oe9bBRJEg5vAqqY',
+            logo_url: 'https://plaid-merchant-logos.plaid.com/rite_aid_832.png',
+            name: 'Rite Aid',
+            phone_number: null,
+            type: 'merchant',
+            website: 'riteaid.com'
+          }
+        ],
+        logo_url: 'https://plaid-merchant-logos.plaid.com/rite_aid_832.png',
+        merchant_name: 'Rite Aid',
+        name: 'Rite Aid',
+        payment_channel: 'in store',
+        personal_finance_category: {
+          confidence_level: 'VERY_HIGH',
+          detailed: 'MEDICAL_PHARMACIES_AND_SUPPLEMENTS',
+          primary: 'MEDICAL'
+        },
+        personal_finance_category_icon_url:
+          'https://plaid-category-icons.plaid.com/PFC_MEDICAL.png',
+        transaction_type: 'place'
+      },
+      {
+        date: `${month}-${getRandomDayOfMonth()}`,
+        amount: getRandomNumber(5, 20),
+        category: ['Shops', 'Hardware Store'],
+        counterparties: [
+          {
+            confidence_level: 'VERY_HIGH',
+            entity_id: 'kVawvV6p0R25gKw3qbp4Kq7kEzDdY5RnjV7RK',
+            logo_url:
+              'https://plaid-merchant-logos.plaid.com/home_depot_491.png',
+            name: 'The Home Depot',
+            phone_number: null,
+            type: 'merchant',
+            website: 'homedepot.com'
+          }
+        ],
+        logo_url: 'https://plaid-merchant-logos.plaid.com/home_depot_491.png',
+        merchant_name: 'The Home Depot',
+        name: 'Home Depot',
+        payment_channel: 'in store',
+        personal_finance_category: {
+          confidence_level: 'VERY_HIGH',
+          detailed: 'HOME_IMPROVEMENT_HARDWARE',
+          primary: 'HOME_IMPROVEMENT'
+        },
+        personal_finance_category_icon_url:
+          'https://plaid-category-icons.plaid.com/PFC_HOME_IMPROVEMENT.png',
+        transaction_type: 'place'
+      },
+      {
+        date: `${month}-${getRandomDayOfMonth()}`,
+        amount: getRandomNumber(100, 300),
+        category: ['Shops', 'Warehouses and Wholesale Stores'],
+        counterparties: [
+          {
+            confidence_level: 'VERY_HIGH',
+            entity_id: 'pBowAoZJMM9DKR37jvNmzM4yWBBXyMzV2rM3A',
+            logo_url: 'https://plaid-merchant-logos.plaid.com/costco_235.png',
+            name: 'Costco',
+            phone_number: null,
+            type: 'merchant',
+            website: 'costco.com'
+          }
+        ],
+        logo_url: 'https://plaid-merchant-logos.plaid.com/costco_235.png',
+        merchant_name: 'Costco',
+        name: 'Costco',
+        payment_channel: 'in store',
+        personal_finance_category: {
+          confidence_level: 'VERY_HIGH',
+          detailed: 'GENERAL_MERCHANDISE_SUPERSTORES',
+          primary: 'GENERAL_MERCHANDISE'
+        },
+        personal_finance_category_icon_url:
+          'https://plaid-category-icons.plaid.com/PFC_GENERAL_MERCHANDISE.png',
+        transaction_type: 'place'
+      },
+      {
+        date: `${month}-${getRandomDayOfMonth()}`,
+        amount: getRandomNumber(5, 20),
+        category: ['Shops', 'Pharmacies'],
+        counterparties: [
+          {
+            confidence_level: 'VERY_HIGH',
+            entity_id: '1dOLXDKNJJMY67wMwVgo5K32Z7E9QRnqYV2Ba',
+            logo_url:
+              'https://plaid-merchant-logos.plaid.com/walgreens_1099.png',
+            name: 'Walgreens',
+            phone_number: null,
+            type: 'merchant',
+            website: 'walgreens.com'
+          }
+        ],
+        logo_url: 'https://plaid-merchant-logos.plaid.com/walgreens_1099.png',
+        merchant_name: 'Walgreens',
+        name: 'Walgreens',
+        payment_channel: 'in store',
+        personal_finance_category: {
+          confidence_level: 'VERY_HIGH',
+          detailed: 'MEDICAL_PHARMACIES_AND_SUPPLEMENTS',
+          primary: 'MEDICAL'
+        },
+        personal_finance_category_icon_url:
+          'https://plaid-category-icons.plaid.com/PFC_MEDICAL.png',
+        transaction_type: 'place'
+      }
+    ];
+    getRandomElements(miscData, 3).forEach(transaction => {
+      data.push(mockTransaction(transaction));
+    });
   });
 
   return data;
