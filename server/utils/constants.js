@@ -19,6 +19,7 @@ const REQUEST_HEADERS = {
 };
 
 const DEMO_MODE = process.env.DEMO_MODE === 'true';
+const DEMO_ACCOUNT_LINKS = ['Plaid', 'Fidelity', 'Chase', 'WECU', 'Robinhood'];
 
 module.exports = {
   PLAID_CLIENT_ID,
@@ -27,5 +28,6 @@ module.exports = {
   PLAID_COUNTRY_CODES,
   BASE_URL,
   REQUEST_HEADERS,
-  DEMO_MODE
+  DEMO_MODE,
+  DEMO_ACCOUNT_LINKS
 };
