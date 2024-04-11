@@ -2,7 +2,7 @@ const { DEMO_MODE } = require('../utils/constants');
 const { getAccountLinks } = require('../utils/mock-data/links');
 const { getTransactionData } = require('../utils/mock-data/transactions');
 const { getAccountBalanceData } = require('../utils/mock-data/accounts');
-const { getRandomId } = require('../utils/helpers');
+const { getRandomId, getRandomNumber } = require('../utils/helpers');
 
 let accountLinks = getAccountLinks();
 
@@ -81,9 +81,8 @@ const updateLinkBalanceMiddleware = (req, res, next) => {
     };
     if (req.originalUrl.includes('balance')) {
       // I've noticed that the Plaid endpoint for balance data takes a while to
-      // responsd, so we'll simulate that here.
-      // const delay = getRandomNumber(5, 10) * 1000; TODO - uncomment this line
-      const delay = 100; // TODO - remove this line
+      // respond, so we'll simulate that here.
+      const delay = getRandomNumber(1, 10) * 1000;
       setTimeout(func, delay);
     } else {
       func();

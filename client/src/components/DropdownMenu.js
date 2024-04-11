@@ -3,7 +3,7 @@ const { useState, useEffect } = require('react');
 const DropdownMenu = props => {
   const [selectedOption, setSelectedOption] = useState(props.items[0]);
 
-  if (!props.excludeAllOption) {
+  if (!props.excludeAllOption && !props.items.includes('All')) {
     props.items.unshift('All');
   }
 

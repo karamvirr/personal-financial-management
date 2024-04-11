@@ -47,11 +47,11 @@ router.post('/link_token', linkTokenMiddleware, (_, res) => {
     })
     .catch(error => {
       res.status(error.response.status).send({
-        status: error.response.status,
-        text: error.response.statusText,
-        code: error.response.data.error_code,
-        message: error.response.data.error_message,
-        documentation_url: error.response.data.documentation_url
+        status: error?.response?.status,
+        text: error?.response?.statusText,
+        code: error?.response?.data?.error_code,
+        message: error?.response?.data?.error_message,
+        documentation_url: error?.response?.data?.documentation_url
       });
     });
 });
@@ -92,11 +92,11 @@ router.post('/reauthentication_link_token', linkTokenMiddleware, (req, res) => {
     })
     .catch(error => {
       res.status(error.response.status).send({
-        status: error.response.status,
-        text: error.response.statusText,
-        code: error.response.data.error_code,
-        message: error.response.data.error_message,
-        documentation_url: error.response.data.documentation_url
+        status: error?.response?.status,
+        text: error?.response?.statusText,
+        code: error?.response?.data?.error_code,
+        message: error?.response?.data?.error_message,
+        documentation_url: error?.response?.data?.documentation_url
       });
     });
 });
@@ -134,11 +134,11 @@ router.post('/access_token', accessTokenMiddleware, (req, res) => {
     })
     .catch(error => {
       res.status(error.response.status).send({
-        status: error.response.status,
-        text: error.response.statusText,
-        code: error.response.data.error_code,
-        message: error.response.data.error_message,
-        documentation_url: error.response.data.documentation_url
+        status: error?.response?.status,
+        text: error?.response?.statusText,
+        code: error?.response?.data?.error_code,
+        message: error?.response?.data?.error_message,
+        documentation_url: error?.response?.data?.documentation_url
       });
     });
 });

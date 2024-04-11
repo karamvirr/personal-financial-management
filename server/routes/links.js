@@ -107,11 +107,11 @@ router.put('/:id/balance', updateLinkBalanceMiddleware, (req, res) => {
     })
     .catch(error => {
       res.status(error.response.status).send({
-        status: error.response.status,
-        text: error.response.statusText,
-        code: error.response.data.error_code,
-        message: error.response.data.error_message,
-        documentation_url: error.response.data.documentation_url
+        status: error?.response?.status,
+        text: error?.response?.statusText,
+        code: error?.response?.data?.error_code,
+        message: error?.response?.data?.error_message,
+        documentation_url: error?.response?.data?.documentation_url
       });
     });
 });
@@ -157,11 +157,11 @@ router.put(
       res.send(updatedLink);
     } catch (error) {
       res.status(error.response.status).send({
-        status: error.response.status,
-        text: error.response.statusText,
-        code: error.response.data.error_code,
-        message: error.response.data.error_message,
-        documentation_url: error.response.data.documentation_url
+        status: error?.response?.status,
+        text: error?.response?.statusText,
+        code: error?.response?.data?.error_code,
+        message: error?.response?.data?.error_message,
+        documentation_url: error?.response?.data?.documentation_url
       });
     }
   }
@@ -197,7 +197,7 @@ router.put(
           .save()
           .then(() => {
             res.send({
-              message: 'Transaction updated',
+              message: 'Transaction updated successfully',
               transaction: transaction
             });
           })
@@ -227,7 +227,7 @@ router.delete('/:id', deleteLinkMiddleware, (req, res) => {
     .then(() => {
       res.send({
         id: id,
-        message: 'Link deleted'
+        message: 'Link deleted successfully'
       });
     })
     .catch(error => {
