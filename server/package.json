@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
+    "start:demo": "DEMO_MODE=true node index.js",
     "test": "jest --watchAll --verbose --detectOpenHandles"
   },
   "author": "Karamvir Rai",
