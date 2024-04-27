@@ -39,7 +39,7 @@ const getIcon = type => {
 
 const BalanceSummary = ({ type, accounts }) => {
   return (
-    <Card className='mb-5' id={type}>
+    <Card className='mb-5'>
       <div
         className='flex items-center justify-between bg-zinc-100
           px-5 py-2.5 shadow-sm'>

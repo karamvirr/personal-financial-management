@@ -1,10 +1,9 @@
-const Card = ({ children, className, onClick, id }) => {
+const Card = ({ children, className, onClick }) => {
   return (
     <div
       className={`${className} overflow-hidden rounded-lg bg-white shadow-lg
         ring-1 ring-slate-900/5`}
-      onClick={onClick}
-      key={id}>
+      onClick={onClick}>
       {children}
     </div>
   );

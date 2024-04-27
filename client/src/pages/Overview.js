@@ -93,7 +93,6 @@ const Overview = () => {
                       Spending
                     </p>
                   </div>
-
                   <MonthlySpendingLineChart data={transactionData} />
                 </Card>
               )}
@@ -136,9 +135,13 @@ const Overview = () => {
             </div>
             {balanceData &&
               Object.entries(balanceData).map(
-                ([type, accounts]) =>
+                ([type, accounts], index) =>
                   accounts.data && (
-                    <BalanceSummary type={type} accounts={accounts} />
+                    <BalanceSummary
+                      key={`${type}-${index}`}
+                      type={type}
+                      accounts={accounts}
+                    />
                   )
               )}
           </>

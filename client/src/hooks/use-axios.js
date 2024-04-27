@@ -18,6 +18,13 @@ const isNewAccountLink = (method, route) => {
   return method.toLowerCase() === 'post' && route === '/links';
 };
 
+const isInvalidMongoDBCluster = error => {
+  return (
+    error?.response?.data?.error === 'MongooseError' &&
+    error?.response?.status === 400
+  );
+};
+
 const useAxios = (route, method) => {
   const ctx = useContext(DataContext);
 
@@ -54,6 +61,13 @@ const useAxios = (route, method) => {
       })
       .catch(error => {
         setError(error);
+        if (isInvalidMongoDBCluster(error)) {
+          ctx.showToast(
+            'An error occured connecting to the database. Please double-check ' +
+              'your configuration and try again.',
+            'error'
+          );
+        }
         if (onFailure) {
           onFailure(error);
         }

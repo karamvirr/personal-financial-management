@@ -29,7 +29,7 @@ The server uses the following environment variables:
 - `PLAID_PRODUCTS` - The products to use with the Plaid API
 - `PLAID_COUNTRY_CODES` - The country codes to use with the Plaid API
 - `MONGODB_CLUSTER_URL` - The URL for the MongoDB cluster
-- `PORT` - The port to run the server on
+- `PORT` - The port to run the server on (client expects the server to run on port 8080)
 - `DEMO_MODE` - Whether to run the server in demo mode
 
 ## API Endpoints

@@ -129,7 +129,9 @@ const MonthlySpendingLineChart = ({ data }) => {
             {buildArrow(currentMonthAmount, previousMonthAmount)}
             <p className='text-sm font-semibold'>
               <span className='font-semibold'>
-                {formatCurrency(currentMonthAmount - previousMonthAmount)}
+                {formatCurrency(
+                  Math.abs(currentMonthAmount - previousMonthAmount)
+                )}
               </span>
               <span className='text-gray-500'>
                 {currentMonthAmount > previousMonthAmount ? ' more ' : ' less '}

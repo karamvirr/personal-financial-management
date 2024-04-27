@@ -7,6 +7,10 @@ module.exports = () => {
       .connect(process.env.MONGODB_CLUSTER_URL)
       .then(() => console.log('Connected to MongoDB...'))
       .catch(() => console.error('Could not connect to MongoDB...'));
+
+    mongoose.connection.on('error', error => {
+      console.error('MongoDB connection error:', error);
+    });
   } else {
     console.log('Not connected to MongoDB...');
   }
