@@ -49,7 +49,7 @@ cd ../client
 npm install # or 'yarn install'
 ```
 
-1. Set up your environment variables in a `.env` file located in the `server` directory (refer to `.env.sample` for additional information):
+4. Set up your environment variables in a `.env` file located in the `server` directory (refer to `.env.sample` for additional information):
 
 ```plaintext
 PLAID_CLIENT_ID=
